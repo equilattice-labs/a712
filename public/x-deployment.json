@@ -1,0 +1,520 @@
+{
+  "project": "Voxdue",
+  "contractName": "XPostRewardEscrow",
+  "version": "0.1.0",
+  "environment": "testnet",
+  "network": {
+    "chainId": 46630,
+    "chainName": "Robinhood Chain Testnet",
+    "rpcUrl": "https://rpc.testnet.chain.robinhood.com",
+    "explorerUrl": "https://explorer.testnet.chain.robinhood.com",
+    "nativeCurrency": {
+      "name": "Ether",
+      "symbol": "ETH",
+      "decimals": 18
+    }
+  },
+  "address": "0xfa0095Af3f8129710E803CE5c9855A4d1db1633F",
+  "attestor": "0x8b3283a9291373069f79508da59001e807bB394F",
+  "deployer": "0x8b3283a9291373069f79508da59001e807bB394F",
+  "transactionHash": "0x0c9b458bf432c07d9faf571b32c6bb3170d83260cac5cd701d22cbe685a39a4c",
+  "blockNumber": 121190852,
+  "deployedAt": "2026-09-18T10:49:35.193Z",
+  "compiler": "0.8.30+commit.73712a01.Emscripten.clang",
+  "compilerSettings": {
+    "optimizer": {
+      "enabled": true,
+      "runs": 200
+    },
+    "evmVersion": "paris"
+  },
+  "constructorArguments": "0x0000000000000000000000008b3283a9291373069f79508da59001e807bb394f",
+  "bytecodeHash": "0xbdb738f3b36dfd1a090b5e7a13a3f71b1b0974bf7808a85a272f5aa20d8046a0",
+  "feeEth": "0.0000153288",
+  "explorerUrl": "https://explorer.testnet.chain.robinhood.com/address/0xfa0095Af3f8129710E803CE5c9855A4d1db1633F",
+  "identityVerification": "Trusted off-chain X OAuth/API attestation. Disabled in app until server credentials are configured.",
+  "trustModel": "Immutable attestor can authorize any active reward. No admin withdrawal or upgrade. Attestor custody is security-critical.",
+  "domain": {
+    "name": "Voxdue X Rewards",
+    "version": "1",
+    "chainId": 46630,
+    "verifyingContract": "0xfa0095Af3f8129710E803CE5c9855A4d1db1633F"
+  },
+  "claimTypes": {
+    "Claim": [
+      {
+        "name": "rewardId",
+        "type": "uint256"
+      },
+      {
+        "name": "recipient",
+        "type": "address"
+      },
+      {
+        "name": "deadline",
+        "type": "uint64"
+      }
+    ]
+  },
+  "auditStatus": "Unaudited testnet prototype",
+  "abi": [
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "attestor_",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "nonpayable",
+      "type": "constructor"
+    },
+    {
+      "inputs": [],
+      "name": "AuthorizationExpired",
+      "type": "error"
+    },
+    {
+      "inputs": [],
+      "name": "ECDSAInvalidSignature",
+      "type": "error"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "length",
+          "type": "uint256"
+        }
+      ],
+      "name": "ECDSAInvalidSignatureLength",
+      "type": "error"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes32",
+          "name": "s",
+          "type": "bytes32"
+        }
+      ],
+      "name": "ECDSAInvalidSignatureS",
+      "type": "error"
+    },
+    {
+      "inputs": [],
+      "name": "EmptyReward",
+      "type": "error"
+    },
+    {
+      "inputs": [],
+      "name": "InvalidAuthorization",
+      "type": "error"
+    },
+    {
+      "inputs": [],
+      "name": "InvalidExpiry",
+      "type": "error"
+    },
+    {
+      "inputs": [],
+      "name": "InvalidIdentity",
+      "type": "error"
+    },
+    {
+      "inputs": [],
+      "name": "InvalidRecipient",
+      "type": "error"
+    },
+    {
+      "inputs": [],
+      "name": "InvalidShortString",
+      "type": "error"
+    },
+    {
+      "inputs": [],
+      "name": "NotPayer",
+      "type": "error"
+    },
+    {
+      "inputs": [],
+      "name": "NotRecipient",
+      "type": "error"
+    },
+    {
+      "inputs": [],
+      "name": "ReentrancyGuardReentrantCall",
+      "type": "error"
+    },
+    {
+      "inputs": [],
+      "name": "RewardExpired",
+      "type": "error"
+    },
+    {
+      "inputs": [],
+      "name": "RewardNotActive",
+      "type": "error"
+    },
+    {
+      "inputs": [],
+      "name": "RewardNotExpired",
+      "type": "error"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "string",
+          "name": "str",
+          "type": "string"
+        }
+      ],
+      "name": "StringTooLong",
+      "type": "error"
+    },
+    {
+      "inputs": [],
+      "name": "TransferFailed",
+      "type": "error"
+    },
+    {
+      "anonymous": false,
+      "inputs": [],
+      "name": "EIP712DomainChanged",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "uint256",
+          "name": "rewardId",
+          "type": "uint256"
+        },
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "recipient",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "amount",
+          "type": "uint256"
+        }
+      ],
+      "name": "RewardClaimed",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "uint256",
+          "name": "rewardId",
+          "type": "uint256"
+        },
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "payer",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "string",
+          "name": "postId",
+          "type": "string"
+        },
+        {
+          "indexed": false,
+          "internalType": "string",
+          "name": "authorId",
+          "type": "string"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "amount",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint64",
+          "name": "expiresAt",
+          "type": "uint64"
+        }
+      ],
+      "name": "RewardCreated",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "uint256",
+          "name": "rewardId",
+          "type": "uint256"
+        },
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "payer",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "amount",
+          "type": "uint256"
+        }
+      ],
+      "name": "RewardRefunded",
+      "type": "event"
+    },
+    {
+      "inputs": [],
+      "name": "CLAIM_TYPEHASH",
+      "outputs": [
+        {
+          "internalType": "bytes32",
+          "name": "",
+          "type": "bytes32"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "MAX_DURATION",
+      "outputs": [
+        {
+          "internalType": "uint64",
+          "name": "",
+          "type": "uint64"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "MIN_DURATION",
+      "outputs": [
+        {
+          "internalType": "uint64",
+          "name": "",
+          "type": "uint64"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "attestor",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "rewardId",
+          "type": "uint256"
+        },
+        {
+          "internalType": "address",
+          "name": "recipient",
+          "type": "address"
+        },
+        {
+          "internalType": "uint64",
+          "name": "deadline",
+          "type": "uint64"
+        },
+        {
+          "internalType": "bytes",
+          "name": "signature",
+          "type": "bytes"
+        }
+      ],
+      "name": "claimReward",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "string",
+          "name": "postId",
+          "type": "string"
+        },
+        {
+          "internalType": "string",
+          "name": "authorId",
+          "type": "string"
+        },
+        {
+          "internalType": "uint64",
+          "name": "expiresAt",
+          "type": "uint64"
+        }
+      ],
+      "name": "createReward",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "rewardId",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "payable",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "eip712Domain",
+      "outputs": [
+        {
+          "internalType": "bytes1",
+          "name": "fields",
+          "type": "bytes1"
+        },
+        {
+          "internalType": "string",
+          "name": "name",
+          "type": "string"
+        },
+        {
+          "internalType": "string",
+          "name": "version",
+          "type": "string"
+        },
+        {
+          "internalType": "uint256",
+          "name": "chainId",
+          "type": "uint256"
+        },
+        {
+          "internalType": "address",
+          "name": "verifyingContract",
+          "type": "address"
+        },
+        {
+          "internalType": "bytes32",
+          "name": "salt",
+          "type": "bytes32"
+        },
+        {
+          "internalType": "uint256[]",
+          "name": "extensions",
+          "type": "uint256[]"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "rewardId",
+          "type": "uint256"
+        }
+      ],
+      "name": "refundReward",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "rewardCount",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "name": "rewards",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "payer",
+          "type": "address"
+        },
+        {
+          "internalType": "uint256",
+          "name": "amount",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint64",
+          "name": "expiresAt",
+          "type": "uint64"
+        },
+        {
+          "internalType": "enum XPostRewardEscrow.Status",
+          "name": "status",
+          "type": "uint8"
+        },
+        {
+          "internalType": "string",
+          "name": "postId",
+          "type": "string"
+        },
+        {
+          "internalType": "string",
+          "name": "authorId",
+          "type": "string"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "totalEscrowed",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    }
+  ],
+  "sourceVerification": {
+    "status": "verified",
+    "checkedAt": "2026-09-18T10:58:30.689Z",
+    "explorer": "https://explorer.testnet.chain.robinhood.com/address/0xfa0095Af3f8129710E803CE5c9855A4d1db1633F?tab=contract"
+  }
+}

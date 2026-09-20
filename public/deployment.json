@@ -1,0 +1,342 @@
+{
+  "project": "Post rewards wallet pilot",
+  "contractName": "PostRewardEscrow",
+  "version": "0.1.0",
+  "environment": "testnet",
+  "network": {
+    "chainId": 46630,
+    "chainName": "Robinhood Chain Testnet",
+    "rpcUrl": "https://rpc.testnet.chain.robinhood.com",
+    "explorerUrl": "https://explorer.testnet.chain.robinhood.com",
+    "nativeCurrency": {
+      "name": "Ether",
+      "symbol": "ETH",
+      "decimals": 18
+    }
+  },
+  "address": "0x1679d36847c323cffA05eFa4448c73309a2D97d9",
+  "deployer": "0x8b3283a9291373069f79508da59001e807bB394F",
+  "transactionHash": "0xbe9a80cd0d1220f42759cf03393a868e6a26dbfee1e4a8337d5327e0d65df13e",
+  "blockNumber": 121185762,
+  "deployedAt": "2026-09-18T10:33:42.018Z",
+  "compiler": "0.8.30+commit.73712a01.Emscripten.clang",
+  "compilerSettings": {
+    "optimizer": {
+      "enabled": true,
+      "runs": 200
+    },
+    "evmVersion": "paris"
+  },
+  "bytecodeHash": "0xc1d50687b3bc810312048cddc14f96c7dc108ebdcb7d23e0875f8a5224f9fd2a",
+  "explorerUrl": "https://explorer.testnet.chain.robinhood.com/address/0x1679d36847c323cffA05eFa4448c73309a2D97d9",
+  "feeEth": "0.00000869499",
+  "identityVerification": "None. Payer selects a recipient wallet; X post ownership is not verified.",
+  "feePolicy": "Zero protocol fee. Users pay testnet network gas.",
+  "auditStatus": "Unaudited testnet prototype",
+  "abi": [
+    {
+      "inputs": [],
+      "name": "EmptyReward",
+      "type": "error"
+    },
+    {
+      "inputs": [],
+      "name": "InvalidExpiry",
+      "type": "error"
+    },
+    {
+      "inputs": [],
+      "name": "InvalidPostId",
+      "type": "error"
+    },
+    {
+      "inputs": [],
+      "name": "InvalidRecipient",
+      "type": "error"
+    },
+    {
+      "inputs": [],
+      "name": "NotPayer",
+      "type": "error"
+    },
+    {
+      "inputs": [],
+      "name": "NotRecipient",
+      "type": "error"
+    },
+    {
+      "inputs": [],
+      "name": "ReentrancyGuardReentrantCall",
+      "type": "error"
+    },
+    {
+      "inputs": [],
+      "name": "RewardExpired",
+      "type": "error"
+    },
+    {
+      "inputs": [],
+      "name": "RewardNotActive",
+      "type": "error"
+    },
+    {
+      "inputs": [],
+      "name": "RewardNotExpired",
+      "type": "error"
+    },
+    {
+      "inputs": [],
+      "name": "TransferFailed",
+      "type": "error"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "uint256",
+          "name": "rewardId",
+          "type": "uint256"
+        },
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "recipient",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "amount",
+          "type": "uint256"
+        }
+      ],
+      "name": "RewardClaimed",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "uint256",
+          "name": "rewardId",
+          "type": "uint256"
+        },
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "payer",
+          "type": "address"
+        },
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "recipient",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "string",
+          "name": "postId",
+          "type": "string"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "amount",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint64",
+          "name": "expiresAt",
+          "type": "uint64"
+        }
+      ],
+      "name": "RewardCreated",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "uint256",
+          "name": "rewardId",
+          "type": "uint256"
+        },
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "payer",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "amount",
+          "type": "uint256"
+        }
+      ],
+      "name": "RewardRefunded",
+      "type": "event"
+    },
+    {
+      "inputs": [],
+      "name": "MAX_DURATION",
+      "outputs": [
+        {
+          "internalType": "uint64",
+          "name": "",
+          "type": "uint64"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "MIN_DURATION",
+      "outputs": [
+        {
+          "internalType": "uint64",
+          "name": "",
+          "type": "uint64"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "rewardId",
+          "type": "uint256"
+        }
+      ],
+      "name": "claimReward",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "string",
+          "name": "postId",
+          "type": "string"
+        },
+        {
+          "internalType": "address",
+          "name": "recipient",
+          "type": "address"
+        },
+        {
+          "internalType": "uint64",
+          "name": "expiresAt",
+          "type": "uint64"
+        }
+      ],
+      "name": "createReward",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "rewardId",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "payable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "rewardId",
+          "type": "uint256"
+        }
+      ],
+      "name": "refundReward",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "rewardCount",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "name": "rewards",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "payer",
+          "type": "address"
+        },
+        {
+          "internalType": "address",
+          "name": "recipient",
+          "type": "address"
+        },
+        {
+          "internalType": "uint256",
+          "name": "amount",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint64",
+          "name": "expiresAt",
+          "type": "uint64"
+        },
+        {
+          "internalType": "enum PostRewardEscrow.Status",
+          "name": "status",
+          "type": "uint8"
+        },
+        {
+          "internalType": "string",
+          "name": "postId",
+          "type": "string"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "totalEscrowed",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    }
+  ],
+  "sourceVerification": {
+    "status": "verified",
+    "checkedAt": "2026-09-18T10:37:42.161Z",
+    "explorer": "https://explorer.testnet.chain.robinhood.com/address/0x1679d36847c323cffA05eFa4448c73309a2D97d9?tab=contract"
+  }
+}

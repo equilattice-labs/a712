@@ -148,7 +148,7 @@ onUnmounted(() => { clearInterval(ticker); document.body.style.overflow = '' })
         <h2>A good post.<br>A real thank you.</h2>
         <p>Send a little appreciation. Follow every step onchain.</p>
         <div class="studio-orb"><span>✳</span></div>
-        <div class="sidebar-facts"><span><ShieldCheck :size="16" /> Non-custodial escrow</span><span><Clock3 :size="16" /> Refund after expiry</span><span><Link2 :size="16" /> Robinhood Chain testnet</span></div>
+        <div class="sidebar-facts"><span><ShieldCheck :size="16" /> Non-custodial escrow</span><span><Clock3 :size="16" /> Refund after expiry</span><span><Link2 :size="16" /> Solana Chain testnet</span></div>
         <small>Test ETH has no monetary value. No X ownership verification in this wallet pilot.</small>
       </aside>
       <div class="studio-content">
@@ -163,7 +163,7 @@ onUnmounted(() => { clearInterval(ticker); document.body.style.overflow = '' })
           <div class="amount-options"><button v-for="value in ['0.0001', '0.001', '0.005']" :key="value" type="button" :class="{ selected: amount === value }" @click="amount = value" :disabled="busy">{{ value }}</button><span>0% protocol fee + network gas</span></div>
           <label class="checkbox-label"><input v-model="acknowledged" type="checkbox" :disabled="busy" /> <span>I checked the recipient wallet. Only this wallet can claim; unclaimed funds are refundable after expiry.</span></label>
           <button class="button primary full-width" type="submit" :disabled="busy || !deployment">{{ busy ? 'Transaction in progress…' : walletAddress ? 'Send reward' : 'Connect wallet to send' }}<ArrowUpRight v-if="!busy" :size="19" /></button>
-          <a class="faucet-link" href="https://faucet.testnet.chain.robinhood.com" target="_blank" rel="noopener noreferrer">Need test ETH? Open the official faucet <ExternalLink :size="12" /></a>
+          <a class="faucet-link" href="https://faucet.testnet.chain.Solana.com" target="_blank" rel="noopener noreferrer">Need test ETH? Open the official faucet <ExternalLink :size="12" /></a>
         </form>
         <div v-else class="manage-reward">
           <h3>Follow the good.</h3><p>Open a receipt to claim a reward or refund an expired one.</p>

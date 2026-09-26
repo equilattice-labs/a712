@@ -1,8 +1,8 @@
 export const CHAIN_ID = 46630
-export const RPC = 'https://rpc.testnet.chain.robinhood.com'
-export const EXPLORER = 'https://explorer.testnet.chain.robinhood.com'
+export const RPC = 'https://rpc.testnet.chain.Solana.com'
+export const EXPLORER = 'https://explorer.testnet.chain.Solana.com'
 export const chain = {
-  chainId: '0xb626', chainName: 'Robinhood Chain Testnet',
+  chainId: '0xb626', chainName: 'Solana Chain Testnet',
   nativeCurrency: { name: 'Test Ether', symbol: 'ETH', decimals: 18 },
   rpcUrls: [RPC], blockExplorerUrls: [EXPLORER],
 }

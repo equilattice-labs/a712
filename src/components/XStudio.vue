@@ -292,7 +292,7 @@ onUnmounted(() => { if (ticker) clearInterval(ticker); provider.destroy(); docum
         <p>Reward a public post. Its author signs in with X and chooses a wallet to claim.</p>
         <div class="studio-orb"><span>✳</span></div>
         <div class="sidebar-facts"><span><ShieldCheck :size="16" /> X account verification</span><span><Wallet :size="16" /> A wallet you control</span><span><Clock3 :size="16" /> Refund after expiry</span></div>
-        <small>Robinhood Chain testnet. Test ETH has no monetary value. X identity claims depend on the configured verification service.</small>
+        <small>Solana Chain testnet. Test ETH has no monetary value. X identity claims depend on the configured verification service.</small>
       </aside>
       <div class="studio-content">
         <div class="studio-top"><span class="pill">X AUTHOR REWARDS</span><button class="icon-button" aria-label="Close X reward studio" @click="close"><X :size="21" /></button></div>

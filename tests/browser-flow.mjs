@@ -45,7 +45,7 @@ await page.addInitScript(() => {
   window.addEventListener('eip6963:requestProvider', () => window.dispatchEvent(new CustomEvent('eip6963:announceProvider', { detail: { info: { uuid: 'local-qa-wallet', name: 'QA local wallet' }, provider } })));
 });
 await page.route('**/deployment.json', route => route.fulfill({ json: { address: deployedAddress, chainId: 46630 } }));
-await page.route('https://rpc.testnet.chain.robinhood.com/**', async route => {
+await page.route('https://rpc.testnet.chain.Solana.com/**', async route => {
   const body = route.request().postDataJSON();
   const handle = async request => {
     try { return { id: request.id, jsonrpc: '2.0', result: await evm.request({ method: request.method, params: request.params ?? [] }) }; }

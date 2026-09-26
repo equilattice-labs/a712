@@ -87,7 +87,7 @@ await page.route('**/api/**', async route => {
   const response = await route.fetch({ url: apiOrigin + original.pathname + original.search });
   await route.fulfill({ response });
 });
-await page.route('https://rpc.testnet.chain.robinhood.com/**', async route => {
+await page.route('https://rpc.testnet.chain.Solana.com/**', async route => {
   const body = route.request().postDataJSON();
   const handle = async req => {
     try { return { id: req.id, jsonrpc: '2.0', result: await rpc.request({ method: req.method, params: req.params ?? [] }) }; }

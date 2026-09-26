@@ -1,11 +1,11 @@
-﻿{
+{
   "project": "Voxaura",
   "contractName": "VoxauraRewards",
   "version": "2",
   "environment": "testnet",
   "network": {
     "chainId": 46630,
-    "chainName": "Solana Chain Testnet",
+    "chainName": "Robinhood Chain Testnet",
     "rpcUrl": "https://rpc.testnet.chain.Solana.com",
     "explorerUrl": "https://explorer.testnet.chain.Solana.com",
     "nativeCurrency": {

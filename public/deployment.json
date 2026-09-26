@@ -1,11 +1,11 @@
-﻿{
+{
   "project": "Post rewards wallet pilot",
   "contractName": "PostRewardEscrow",
   "version": "0.1.0",
   "environment": "testnet",
   "network": {
     "chainId": 46630,
-    "chainName": "Solana Chain Testnet",
+    "chainName": "Robinhood Chain Testnet",
     "rpcUrl": "https://rpc.testnet.chain.Solana.com",
     "explorerUrl": "https://explorer.testnet.chain.Solana.com",
     "nativeCurrency": {

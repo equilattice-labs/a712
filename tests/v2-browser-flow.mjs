@@ -1,4 +1,4 @@
-﻿// Real local contracts + real local API verification logic; only X identity responses are mocked.
+// Real local contracts + real local API verification logic; only X identity responses are mocked.
 // This test never reads key.txt and never contacts X or a remote chain for transactions.
 import { chromium } from 'playwright';
 import { createRequire } from 'node:module';
@@ -98,7 +98,7 @@ await page.route('https://rpc.testnet.chain.Solana.com/**', async route => {
 
 try {
   await page.goto(origin, { waitUntil: 'networkidle' });
-  await page.getByRole('button', { name: 'Connect wallet', exact: true }).click();
+  await page.locator('header').getByRole('button', { name: 'Connect wallet', exact: true }).click();
   await page.getByRole('button', { name: 'Local QA wallet' }).click();
   await page.getByRole('button', { name: 'Open app', exact: true }).click();
   const dialog = page.locator('dialog:visible');
@@ -182,4 +182,3 @@ try {
   if (path.dirname(resolvedTemp).toLowerCase() !== path.resolve(os.tmpdir()).toLowerCase() || !path.basename(resolvedTemp).startsWith('Voxaura-v2-qa-')) throw new Error('Refusing cleanup outside the verified QA temp directory.');
   await fs.rm(resolvedTemp, { recursive: true, force: true });
 }
-

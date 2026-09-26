@@ -2,7 +2,7 @@ export const CHAIN_ID = 46630
 export const RPC = 'https://rpc.testnet.chain.Solana.com'
 export const EXPLORER = 'https://explorer.testnet.chain.Solana.com'
 export const chain = {
-  chainId: '0xb626', chainName: 'Solana Chain Testnet',
+  chainId: '0xb626', chainName: 'Robinhood Chain Testnet',
   nativeCurrency: { name: 'Test Ether', symbol: 'ETH', decimals: 18 },
   rpcUrls: [RPC], blockExplorerUrls: [EXPLORER],
 }
@@ -15,7 +15,7 @@ export function parsePostUrl(value: string): string {
   } catch { return '' }
 }
 
-export function shortAddress(address: string) { return address ? `${address.slice(0, 6)}…${address.slice(-4)}` : '' }
+export function shortAddress(address: string) { return address ? `${address.slice(0, 6)}...{address.slice(-4)}` : '' }
 export function friendlyError(error: unknown): string {
   const e = error as { code?: string | number; shortMessage?: string; message?: string; info?: { error?: { code?: number } } }
   if (e.code === 'ACTION_REJECTED' || e.code === 4001 || e.info?.error?.code === 4001) return 'Request cancelled in your wallet. Nothing was submitted.'

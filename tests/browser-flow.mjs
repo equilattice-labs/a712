@@ -1,4 +1,4 @@
-﻿// Full UI flow against an isolated local EVM. Never reads the supplied deployment key.
+// Full UI flow against an isolated local EVM. Never reads the supplied deployment key.
 import { chromium } from 'playwright';
 import { createRequire } from 'node:module';
 import fs from 'node:fs/promises';
@@ -56,7 +56,7 @@ await page.route('https://rpc.testnet.chain.Solana.com/**', async route => {
 
 try {
   await page.goto(process.env.QA_URL ?? 'http://127.0.0.1:5177', { waitUntil: 'networkidle' });
-  await page.getByRole('button', { name: 'Connect wallet', exact: true }).click();
+  await page.locator('header').getByRole('button', { name: 'Connect wallet', exact: true }).click();
   await page.evaluate(() => { window.__testWallet.reject = true; });
   await page.getByRole('button', { name: 'QA local wallet' }).click();
   await page.getByRole('alert').filter({ hasText: 'cancelled' }).waitFor();
@@ -95,9 +95,9 @@ try {
   await page.getByRole('button', { name: 'Look up' }).click();
   await page.getByRole('alert').filter({ hasText: 'No reward exists' }).waitFor();
   await page.getByRole('button', { name: 'Close reward studio' }).click();
-  await page.getByRole('button', { name: /0x.*鈥? }).click();
+  await page.getByRole('button', { name: /0x.*Disconnect/ }).click();
   await page.getByRole('button', { name: 'Disconnect from Voxaura' }).click();
-  assert.equal(await page.getByRole('button', { name: 'Connect wallet', exact: true }).isVisible(), true);
+  assert.equal(await page.locator('header').getByRole('button', { name: 'Connect wallet', exact: true }).isVisible(), true);
   assert.deepEqual(browserErrors, []);
   console.log('PASS: browser EIP-6963 discovery, rejected connection, retry, wrong-chain switch, invalid recipient, create, receipt identity, claim, refund, unknown ID and disconnect. Isolated local EVM; no supplied key used.');
 } finally {

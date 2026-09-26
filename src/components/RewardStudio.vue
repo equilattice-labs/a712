@@ -76,7 +76,7 @@ async function sendReward() {
     const expiry = (latest?.timestamp ?? Math.floor(Date.now() / 1000)) + Number(duration.value)
     notice.value = 'Review the reward in your wallet.'
     const tx = await contract.createReward(postId.value, recipient.value, expiry, { value, chainId: 46630 })
-    txHash.value = tx.hash; notice.value = 'Transaction submitted. Waiting for onchain confirmation…'
+    txHash.value = tx.hash; notice.value = 'Transaction submitted. Waiting for onchain confirmation...'
     const receipt = await tx.wait()
     const iface = new Interface(abi)
     let createdId = ''
@@ -119,7 +119,7 @@ async function act(action: 'claimReward' | 'refundReward') {
     const signer = await walletSigner()
     const actionId = loadedRewardId.value
     const tx = await new Contract(deployment.value.address, abi, signer)[action](actionId, { chainId: 46630 })
-    txHash.value = tx.hash; notice.value = 'Transaction submitted. Waiting for confirmation…'
+    txHash.value = tx.hash; notice.value = 'Transaction submitted. Waiting for confirmation...'
     await tx.wait(); rewardId.value = actionId; await loadReward(); await refreshWallet()
     notice.value = action === 'claimReward' ? 'Reward claimed. The test ETH is in your wallet.' : 'Reward refunded to the original sender.'
   } catch (e) { error.value = friendlyError(e); notice.value = '' }
@@ -143,12 +143,12 @@ onUnmounted(() => { clearInterval(ticker); document.body.style.overflow = '' })
   <dialog ref="dialog" class="studio-dialog" @close="close" @click="e => { if (e.target === dialog) close() }">
     <div class="studio-shell">
       <aside class="studio-sidebar">
-        <a class="brand" href="#" @click.prevent="close"><img src="/logo.svg" alt="" />voxdue</a>
+        <a class="brand" href="#" @click.prevent="close"><img src="/logo.svg" alt="" />voxaura</a>
         <span class="eyebrow"><span class="live-dot"></span> THE TESTNET STUDIO</span>
         <h2>A good post.<br>A real thank you.</h2>
         <p>Send a little appreciation. Follow every step onchain.</p>
-        <div class="studio-orb"><span>✳</span></div>
-        <div class="sidebar-facts"><span><ShieldCheck :size="16" /> Non-custodial escrow</span><span><Clock3 :size="16" /> Refund after expiry</span><span><Link2 :size="16" /> Solana Chain testnet</span></div>
+        <div class="studio-orb"><span>*</span>></div>
+        <div class="sidebar-facts"><span><ShieldCheck :size="16" /> Non-custodial escrow</span><span><Clock3 :size="16" /> Refund after expiry</span><span><Link2 :size="16" /> Robinhood Chain testnet</span></div>
         <small>Test ETH has no monetary value. No X ownership verification in this wallet pilot.</small>
       </aside>
       <div class="studio-content">
@@ -157,12 +157,12 @@ onUnmounted(() => { clearInterval(ticker); document.body.style.overflow = '' })
         <div class="studio-wallet"><span><span class="live-dot" :class="{ offline: !walletAddress }"></span>{{ walletAddress ? shortAddress(walletAddress) : 'No wallet connected' }}<small v-if="walletBalance"> · {{ walletBalance }} test ETH</small><small v-else-if="walletAddress && walletChain !== 46630"> · switch required</small></span><button @click="emit('connect')">{{ walletAddress ? 'Manage' : 'Connect' }} <Wallet :size="14" /></button></div>
         <form v-if="tab === 'send'" class="reward-form" @submit.prevent="sendReward">
           <div><h3>Make someone’s post.</h3><p>Pick the post. Choose the amount. Send the appreciation.</p></div>
-          <label>X post URL <div class="input-with-icon"><Link2 :size="17" /><input v-model="postUrl" type="url" placeholder="https://x.com/creator/status/…" autocomplete="off" required :disabled="busy" /></div></label>
-          <label>Creator’s wallet address <input v-model.trim="recipient" placeholder="0x…" required autocomplete="off" :disabled="busy" /><small>Ask the creator for their wallet. X post ownership is not verified.</small></label>
+          <label>X post URL <div class="input-with-icon"><Link2 :size="17" /><input v-model="postUrl" type="url" placeholder="https://x.com/creator/status/..." autocomplete="off" required :disabled="busy" /></div></label>
+          <label>Creator’s wallet address <input v-model.trim="recipient" placeholder="0x..." required autocomplete="off" :disabled="busy" /><small>Ask the creator for their wallet. X post ownership is not verified.</small></label>
           <div class="field-row"><label>Amount <div class="amount-input"><input v-model="amount" inputmode="decimal" aria-label="Reward amount" :disabled="busy" /><span>test ETH</span></div></label><label>Claim window <select v-model="duration" :disabled="busy"><option value="3600">1 hour</option><option value="86400">1 day</option><option value="604800">7 days</option><option value="2592000">30 days</option></select></label></div>
           <div class="amount-options"><button v-for="value in ['0.0001', '0.001', '0.005']" :key="value" type="button" :class="{ selected: amount === value }" @click="amount = value" :disabled="busy">{{ value }}</button><span>0% protocol fee + network gas</span></div>
           <label class="checkbox-label"><input v-model="acknowledged" type="checkbox" :disabled="busy" /> <span>I checked the recipient wallet. Only this wallet can claim; unclaimed funds are refundable after expiry.</span></label>
-          <button class="button primary full-width" type="submit" :disabled="busy || !deployment">{{ busy ? 'Transaction in progress…' : walletAddress ? 'Send reward' : 'Connect wallet to send' }}<ArrowUpRight v-if="!busy" :size="19" /></button>
+          <button class="button primary full-width" type="submit" :disabled="busy || !deployment">{{ busy ? 'Transaction in progress...' : walletAddress ? 'Send reward' : 'Connect wallet to send' }}<ArrowUpRight v-if="!busy" :size="19" /></button>
           <a class="faucet-link" href="https://faucet.testnet.chain.Solana.com" target="_blank" rel="noopener noreferrer">Need test ETH? Open the official faucet <ExternalLink :size="12" /></a>
         </form>
         <div v-else class="manage-reward">

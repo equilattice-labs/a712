@@ -1,4 +1,4 @@
-﻿{
+{
   "project": "Voxaura",
   "contractName": "XPostRewardEscrow",
   "version": "0.1.0",
@@ -6,8 +6,8 @@
   "network": {
     "chainId": 46630,
     "chainName": "Robinhood Chain Testnet",
-    "rpcUrl": "https://rpc.testnet.chain.robinhood.com",
-    "explorerUrl": "https://explorer.testnet.chain.robinhood.com",
+    "rpcUrl": "https://rpc.testnet.chain.Solana.com",
+    "explorerUrl": "https://explorer.testnet.chain.Solana.com",
     "nativeCurrency": {
       "name": "Ether",
       "symbol": "ETH",
@@ -31,7 +31,7 @@
   "constructorArguments": "0x0000000000000000000000008b3283a9291373069f79508da59001e807bb394f",
   "bytecodeHash": "0xbdb738f3b36dfd1a090b5e7a13a3f71b1b0974bf7808a85a272f5aa20d8046a0",
   "feeEth": "0.0000153288",
-  "explorerUrl": "https://explorer.testnet.chain.robinhood.com/address/0xfa0095Af3f8129710E803CE5c9855A4d1db1633F",
+  "explorerUrl": "https://explorer.testnet.chain.Solana.com/address/0xfa0095Af3f8129710E803CE5c9855A4d1db1633F",
   "identityVerification": "Trusted off-chain X OAuth/API attestation. Disabled in app until server credentials are configured.",
   "trustModel": "Immutable attestor can authorize any active reward. No admin withdrawal or upgrade. Attestor custody is security-critical.",
   "domain": {
@@ -515,7 +515,7 @@
   "sourceVerification": {
     "status": "verified",
     "checkedAt": "2026-09-18T10:58:30.689Z",
-    "explorer": "https://explorer.testnet.chain.robinhood.com/address/0xfa0095Af3f8129710E803CE5c9855A4d1db1633F?tab=contract"
+    "explorer": "https://explorer.testnet.chain.Solana.com/address/0xfa0095Af3f8129710E803CE5c9855A4d1db1633F?tab=contract"
   }
 }
 

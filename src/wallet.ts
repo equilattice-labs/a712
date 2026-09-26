@@ -69,7 +69,7 @@ export async function walletSigner() {
     }
   }
   await refreshWallet()
-  if (walletChain.value !== CHAIN_ID) throw new Error('Switch your wallet to Solana Chain Testnet to continue.')
+  if (walletChain.value !== CHAIN_ID) throw new Error('Switch your wallet to Robinhood Chain Testnet to continue.')
   const provider = new BrowserProvider(selected, CHAIN_ID)
   return provider.getSigner(walletAddress.value)
 }

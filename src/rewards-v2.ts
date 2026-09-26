@@ -14,7 +14,7 @@ export function validPublicNote(value: string) {
 }
 export function rewardAmounts(amount: bigint) {
   const fee = amount * REWARD_FEE_BPS / 10000n
-  return { gross: amount, fee, creator: amount ? fee }
+  return { gross: amount, fee, creator: amount - fee }
 }
 export function parseRewardAmount(value: string, asset: RewardAsset) {
   const trimmed = value.trim()
@@ -45,5 +45,3 @@ export function normalizeReward(data: any, fallbackId = ''): RewardRecord {
   if (status !== 0 && (!/^\d{1,30}$/.test(postId) || !/^\d{1,30}$/.test(authorId) || typeof data.note !== 'string')) throw new Error('The network returned invalid post information.')
   return { id, payer: getAddress(data.payer), token: getAddress(data.token), amount, expiresAt, status, postId, authorId, note: String(data.note ?? '') }
 }
-
-

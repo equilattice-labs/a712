@@ -73,5 +73,3 @@ export async function walletSigner() {
   const provider = new BrowserProvider(selected, CHAIN_ID)
   return provider.getSigner(walletAddress.value)
 }
-
-

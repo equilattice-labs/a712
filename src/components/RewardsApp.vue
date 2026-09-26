@@ -85,14 +85,14 @@ watch(walletAddress, () => { tokenBalance.value = null; if (dialog.value?.open) 
 
 async function api<T>(url: string, options: RequestInit = {}): Promise<T> {
   const response = await fetch(url, { ...options, credentials: 'same-origin', signal: AbortSignal.timeout(18000), headers: { Accept: 'application/json', ...(options.body ? { 'Content-Type': 'application/json' } : {}), ...(csrf.value ? { 'X-CSRF-Token': csrf.value } : {}), ...options.headers } })
-  if (!(response.headers.get('content-type') 's '').includes('application/json')) throw new Error('The identity API is unavailable. Public receipts remain available onchain.')
+  if (!(response.headers.get('content-type') ?? '').includes('application/json')) throw new Error('The identity API is unavailable. Public receipts remain available onchain.')
   const data = await response.json()
   if (!response.ok) { if (response.status === 401) user.value = null; throw new Error(typeof data.error === 'string' ? data.error : 'The request could not be completed. Please try again.') }
   return data as T
 }
 async function session() {
   const value = await api<{ user: XUser | null; csrfToken: string }>('/api/session')
-  user.value = value.user; csrf.value = value.csrfToken 's ''
+  user.value = value.user; csrf.value = value.csrfToken ?? ''
 }
 function anchor(timestamp: number) { chainClock = timestamp; chainClockAt = performance.now(); now.value = timestamp }
 async function setup() {
@@ -105,7 +105,7 @@ async function setup() {
     ])
     if (deployment.status === 'fulfilled') {
       const d = deployment.value
-      if (isAddress(d.address) && d.address !== ZeroAddress && Number(d.chainId 's d.network?.chainId) === CHAIN_ID && isAddress(d.token?.address) && d.token.address !== ZeroAddress && Number(d.token.decimals) === 6) config.value = { address: getAddress(d.address), token: { address: getAddress(d.token.address), decimals: 6, symbol: 'tUSD' } }
+      if (isAddress(d.address) && d.address !== ZeroAddress && Number(d.chainId ?? d.network?.chainId) === CHAIN_ID && isAddress(d.token?.address) && d.token.address !== ZeroAddress && Number(d.token.decimals) === 6) config.value = { address: getAddress(d.address), token: { address: getAddress(d.token.address), decimals: 6, symbol: 'tUSD' } }
     }
     xEnabled.value = !!config.value && health.status === 'fulfilled' && health.value.xEnabled === true && health.value.chainId === CHAIN_ID && (!health.value.address || health.value.address.toLowerCase() === config.value.address.toLowerCase())
     relayEnabled.value = xEnabled.value && health.status === 'fulfilled' && health.value.relayEnabled === true
@@ -148,7 +148,7 @@ async function loadLedger() {
     } catch { ledger.value = [] }
   }
 }
-async function show(preset-: string) {
+async function show(preset?: string) {
   if (preset) { postUrl.value = preset; tab.value = 'send' }
   if (!dialog.value?.open) dialog.value?.showModal(); document.body.style.overflow = 'hidden'
   await setup()
@@ -169,7 +169,7 @@ async function resolvePost() {
   if (!id) { error.value = 'Paste a complete public HTTPS X post URL.'; return }
   const sequence = ++postGeneration; resolving.value = true
   try {
-    const value = await api<Post>(`/api/v2/x/post-url=${encodeURIComponent(postUrl.value.trim())}`)
+    const value = await api<Post>(`/api/v2/x/post?url=${encodeURIComponent(postUrl.value.trim())}`)
     if (sequence !== postGeneration) return
     if (value.postId !== id || !/^\d{1,30}$/.test(value.authorId) || !/^[A-Za-z0-9_]{1,15}$/.test(value.username) || typeof value.text !== 'string') throw new Error('The author response was incomplete. Try again.')
     post.value = value
@@ -177,7 +177,7 @@ async function resolvePost() {
   finally { resolving.value = false }
 }
 async function confirmed(tx: any) {
-  txHash.value = tx.hash; notice.value = 'Submitted. Waiting for the onchain receipt.'
+  txHash.value = tx.hash; notice.value = 'Submitted. Waiting for the onchain receipt…'
   try { const receipt = await tx.wait(); if (!receipt || receipt.status !== 1) throw new Error('The transaction was not confirmed successfully.'); return receipt }
   catch (e: any) { if (e.code === 'TRANSACTION_REPLACED' && !e.cancelled && e.receipt?.status === 1) { txHash.value = e.replacement.hash; return e.receipt } throw e }
 }
@@ -223,8 +223,8 @@ async function faucet() {
 }
 function login() {
   if (!xEnabled.value || busy.value) return
-  const returnTo = selected.value ? `/-v2Reward=${selected.value.id}` : '/-v2=connected'
-  window.location.assign(`/api/auth/x/start-returnTo=${encodeURIComponent(returnTo)}`)
+  const returnTo = selected.value ? `/?v2Reward=${selected.value.id}` : '/?v2=connected'
+  window.location.assign(`/api/auth/x/start?returnTo=${encodeURIComponent(returnTo)}`)
 }
 async function logout() {
   if (busy.value) return
@@ -245,7 +245,7 @@ async function loadFeed(more = false) {
       const params = new URLSearchParams({ limit: '10' }); if (cursor) params.set('cursor', cursor)
       if (currentTab === 'sent') params.set('payer', payer)
       if (currentTab === 'received') params.set('authorId', author!)
-      const result = await api<{ items: any[]; nextCursor: string | number | null; hasMore: boolean; snapshotCount-: string }>(`/api/v2/rewards-${params}`)
+      const result = await api<{ items: any[]; nextCursor: string | number | null; hasMore: boolean; snapshotCount?: string }>(`/api/v2/rewards?${params}`)
       if (!Array.isArray(result.items)) throw new Error('Invalid reward feed.')
       items = result.items.map(item => normalizeReward(item)); next = result.nextCursor ? String(result.nextCursor) : null; moreAvailable = result.hasMore === true
       if (result.snapshotCount != null) totalCount.value = String(result.snapshotCount)
@@ -283,7 +283,7 @@ async function openReceipt(id = lookupId.value) {
 async function claim() {
   if (busy.value || !selected.value || !config.value || !activeReward.value || expiredReward.value || !xEnabled.value) return
   if (!user.value) { login(); return }
-  if (!ownAuthor.value) { error.value = 'Sign in with the X account matching this reward鈥檚 author ID.'; return }
+  if (!ownAuthor.value) { error.value = 'Sign in with the X account matching this reward’s author ID.'; return }
   if (!walletAddress.value) { emit('connect'); return }
   const reward = { ...selected.value }; const address = config.value.address
   const sponsored = useRelay.value && relayEnabled.value
@@ -291,7 +291,7 @@ async function claim() {
   try {
     await session(); if (user.value?.id !== reward.authorId) throw new Error('Your X session changed. Sign in with the rewarded author.')
     const signer = await walletSigner(); const recipient = await signer.getAddress()
-    const challenge = await api<{ message: string; nonce: string }>(`/api/v2/wallet/challenge-rewardId=${reward.id}&address=${encodeURIComponent(recipient)}`)
+    const challenge = await api<{ message: string; nonce: string }>(`/api/v2/wallet/challenge?rewardId=${reward.id}&address=${encodeURIComponent(recipient)}`)
     if (!challenge.message || !challenge.nonce) throw new Error('The wallet challenge was incomplete.')
     notice.value = 'Sign a one-time wallet proof. This signature does not move funds.'
     const walletSignature = await signer.signMessage(challenge.message)
@@ -299,9 +299,9 @@ async function claim() {
     const body = JSON.stringify({ recipient, walletSignature })
     if (sponsored) {
       operation.value = 'Submit sponsored claim'
-      const response = await api<{ transactionHash: string; recipient-: string; rewardId-: string }>(`/api/v2/rewards/${reward.id}/relay`, { method: 'POST', body })
+      const response = await api<{ transactionHash: string; recipient?: string; rewardId?: string }>(`/api/v2/rewards/${reward.id}/relay`, { method: 'POST', body })
       if (!/^0x[0-9a-fA-F]{64}$/.test(response.transactionHash) || (response.recipient && response.recipient.toLowerCase() !== recipient.toLowerCase()) || (response.rewardId && String(response.rewardId) !== reward.id)) throw new Error('The relay response did not match this reward.')
-      txHash.value = response.transactionHash; notice.value = 'Gas-sponsored claim submitted. Waiting for confirmation.'
+      txHash.value = response.transactionHash; notice.value = 'Gas-sponsored claim submitted. Waiting for confirmation…'
       const receipt = await provider.waitForTransaction(response.transactionHash, 1, 90000)
       if (!receipt || receipt.status !== 1) throw new Error('Claim confirmation is pending or unsuccessful. Check the transaction before trying again.')
     } else {
@@ -329,11 +329,11 @@ async function refund() {
 }
 function receiptUrl() { const url = new URL('/', location.origin); url.searchParams.set('v2Reward', selected.value!.id); return url.toString() }
 async function copyReceipt() { if (!selected.value) return; try { await navigator.clipboard.writeText(receiptUrl()); notice.value = 'Reward receipt copied.' } catch { notice.value = `Receipt: ${receiptUrl()}` } }
-function shareReceipt() { if (!selected.value) return; const url = new URL('https://x.com/intent/tweet'); url.searchParams.set('text', 'A little appreciation for a worthwhile post. My Voxaura testnet reward receipt:'); url.searchParams.set('url', receiptUrl()); window.open(url.toString(), '_blank', 'noopener,noreferrer') }
+function shareReceipt() { if (!selected.value) return; const url = new URL('https://x.com/intent/tweet'); url.searchParams.set('text', 'A little appreciation for a worthwhile post. My Voxdue testnet reward receipt:'); url.searchParams.set('url', receiptUrl()); window.open(url.toString(), '_blank', 'noopener,noreferrer') }
 function amountText(reward: RewardRecord, amountValue = reward.amount) { return `${displayAmount(amountValue, rewardAsset(reward.token))} ${rewardAsset(reward.token) === 'ETH' ? 'test ETH' : 'tUSD'}` }
 function formatDate(seconds: number) { return new Date(seconds * 1000).toLocaleString('en-US', { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit', timeZoneName: 'short' }) }
 onMounted(async () => {
-  timer = setInterval(() => { now.value = chainClock ? chainClock + Math.floor((performance.now() ? chainClockAt) / 1000) : Math.floor(Date.now() / 1000) }, 1000)
+  timer = setInterval(() => { now.value = chainClock ? chainClock + Math.floor((performance.now() - chainClockAt) / 1000) : Math.floor(Date.now() / 1000) }, 1000)
   const params = new URLSearchParams(location.search)
   if (params.get('v2Reward')) { tab.value = 'activity'; await show(); await openReceipt(params.get('v2Reward')!) }
   else if (params.get('v2') === 'connected') { tab.value = 'received'; await show() }
@@ -345,38 +345,38 @@ onUnmounted(() => { if (timer) clearInterval(timer); provider.destroy(); documen
   <dialog ref="dialog" class="rewards-app" aria-labelledby="rewards-app-title" @close="close" @click="e => { if (e.target === dialog) close() }">
     <div class="ra-shell">
       <aside class="ra-sidebar">
-        <a class="brand" href="#" @click.prevent="close"><img src="/logo.svg" alt="" />Voxaura</a>
+        <a class="brand" href="#" @click.prevent="close"><img src="/logo.svg" alt="" />voxdue</a>
         <div class="ra-workspace-label"><span class="live-dot"></span> THE APPRECIATION DESK</div>
         <nav class="ra-tabs" role="tablist" aria-label="Rewards dashboard">
           <button v-for="item in nav" :id="`ra-tab-${item.id}`" :key="item.id" role="tab" :aria-selected="tab === item.id" aria-controls="ra-panel" :class="{ active: tab === item.id }" :disabled="busy" @click="changeTab(item.id)"><component :is="item.icon" :size="17" /><span>{{ item.label }}</span><ArrowRight v-if="tab === item.id" :size="14" /></button>
         </nav>
-        <div class="ra-balance-card"><span>YOUR TESTNET WALLET</span><button class="ra-wallet" :disabled="busy" @click="emit('connect')"><Wallet :size="15" />{{ walletAddress ? shortAddress(walletAddress) : 'Connect wallet' }}<ArrowUpRight :size="13" /></button><template v-if="walletAddress"><div class="ra-balance"><strong>{{ walletBalance || '' }}</strong><span>test ETH</span></div><div class="ra-balance"><strong>{{ tokenBalance !== null ? displayAmount(tokenBalance, 'tUSD') : '' }}</strong><span>tUSD</span></div></template><button class="ra-faucet" :disabled="busy || !config" @click="faucet"><Gift :size="14" /> Get 1,000 tUSD <ArrowUpRight :size="12" /></button><small>Free test tokens 路 once per 24h<br>No monetary value. Network gas applies.</small><a href="https://faucet.testnet.chain.robinhood.com" target="_blank" rel="noopener noreferrer">Need test ETH- <ExternalLink :size="11" /></a></div>
-        <div class="ra-sidebar-bottom"><span class="ra-spark">+</span><p>Good voices.<br>Their due.</p><small>Robinhood Chain Testnet<br>Independent. Experimental. Unaudited.</small></div>
+        <div class="ra-balance-card"><span>YOUR TESTNET WALLET</span><button class="ra-wallet" :disabled="busy" @click="emit('connect')"><Wallet :size="15" />{{ walletAddress ? shortAddress(walletAddress) : 'Connect wallet' }}<ArrowUpRight :size="13" /></button><template v-if="walletAddress"><div class="ra-balance"><strong>{{ walletBalance || '—' }}</strong><span>test ETH</span></div><div class="ra-balance"><strong>{{ tokenBalance !== null ? displayAmount(tokenBalance, 'tUSD') : '—' }}</strong><span>tUSD</span></div></template><button class="ra-faucet" :disabled="busy || !config" @click="faucet"><Gift :size="14" /> Get 1,000 tUSD <ArrowUpRight :size="12" /></button><small>Free test tokens · once per 24h<br>No monetary value. Network gas applies.</small><a href="https://faucet.testnet.chain.robinhood.com" target="_blank" rel="noopener noreferrer">Need test ETH? <ExternalLink :size="11" /></a></div>
+        <div class="ra-sidebar-bottom"><span class="ra-spark">✳</span><p>Good voices.<br>Their due.</p><small>Robinhood Chain Testnet<br>Independent. Experimental. Unaudited.</small></div>
       </aside>
       <main class="ra-main">
-        <header class="ra-topbar"><div class="ra-network"><span class="live-dot"></span> TESTNET <span>/</span> REWARDS V2</div><div class="ra-top-actions"><button v-if="user" class="ra-x-user" :disabled="busy" @click="logout"><CircleCheck :size="14" /> @{{ user.username }} <small>Sign out</small></button><button v-else class="ra-x-user" :disabled="!xEnabled || busy" @click="login">饾晱 <span>Sign in to claim</span></button><button class="icon-button" aria-label="Close rewards dashboard" @click="close"><X :size="21" /></button></div></header>
+        <header class="ra-topbar"><div class="ra-network"><span class="live-dot"></span> TESTNET <span>/</span> REWARDS V2</div><div class="ra-top-actions"><button v-if="user" class="ra-x-user" :disabled="busy" @click="logout"><CircleCheck :size="14" /> @{{ user.username }} <small>Sign out</small></button><button v-else class="ra-x-user" :disabled="!xEnabled || busy" @click="login">𝕏 <span>Sign in to claim</span></button><button class="icon-button" aria-label="Close rewards dashboard" @click="close"><X :size="21" /></button></div></header>
         <div class="ra-content" id="ra-panel" role="tabpanel" :aria-labelledby="`ra-tab-${tab}`">
           <div class="ra-page-heading"><div><div class="eyebrow">SMALL GESTURES. REAL RECEIPTS.</div><h2 id="rewards-app-title">{{ pageCopy[0] }}</h2><p>{{ pageCopy[1] }}</p></div><button class="ra-refresh" :disabled="busy || setupBusy || feedBusy" aria-label="Refresh reward data" @click="setup(); tab !== 'send' && loadFeed()"><RefreshCw :size="16" /><span>Refresh</span></button></div>
-          <div class="ra-stats"><div><span>REWARDS CREATED</span><strong>{{ totalCount 's '' }}</strong><small>Onchain count 路 includes tests</small></div><div><span>TO THE CREATOR</span><strong>97<span>%</span></strong><small>3% fee only when claimed</small></div><div><span>CLAIM WINDOW</span><strong>90 <span>days</span></strong><small>Full refund if unclaimed</small></div></div>
-          <div v-if="setupBusy" class="ra-service-note" role="status"><LoaderCircle :size="17" /> Checking the reward service</div>
-          <div v-else-if="!xEnabled" class="ra-service-note"><ShieldCheck :size="19" /><div><strong>X author verification is not configured.</strong><p>Funding and author claims need the operator鈥檚 X API credentials. Public receipts, activity and expired refunds remain available. No author verification is simulated.</p><button class="ra-pilot-fallback" @click="openWalletPilot">Try wallet pilot <ArrowUpRight :size="13" /></button></div><a href="/docs/x-identity-setup.html" target="_blank" rel="noopener noreferrer">Setup guide <ArrowUpRight :size="13" /></a></div>
-          <div class="ra-mobile-wallet"><button :disabled="busy" @click="emit('connect')"><Wallet :size="15" />{{ walletAddress ? shortAddress(walletAddress) : 'Connect wallet' }}<ArrowUpRight :size="12" /></button><span v-if="walletAddress">{{ tokenBalance !== null ? displayAmount(tokenBalance, 'tUSD') : '' }} tUSD 路 {{ walletBalance || '' }} test ETH</span><button :disabled="busy || !config" @click="faucet"><Gift :size="14" /> Get 1,000 tUSD</button><small>Mock tokens 路 once per 24h 路 testnet gas applies</small><a href="https://faucet.testnet.chain.robinhood.com" target="_blank" rel="noopener noreferrer">Get test ETH <ExternalLink :size="11" /></a></div>
+          <div class="ra-stats"><div><span>REWARDS CREATED</span><strong>{{ totalCount ?? '—' }}</strong><small>Onchain count · includes tests</small></div><div><span>TO THE CREATOR</span><strong>97<span>%</span></strong><small>3% fee only when claimed</small></div><div><span>CLAIM WINDOW</span><strong>90 <span>days</span></strong><small>Full refund if unclaimed</small></div></div>
+          <div v-if="setupBusy" class="ra-service-note" role="status"><LoaderCircle :size="17" /> Checking the reward service…</div>
+          <div v-else-if="!xEnabled" class="ra-service-note"><ShieldCheck :size="19" /><div><strong>X author verification is not configured.</strong><p>Funding and author claims need the operator’s X API credentials. Public receipts, activity and expired refunds remain available. No author verification is simulated.</p><button class="ra-pilot-fallback" @click="openWalletPilot">Try wallet pilot <ArrowUpRight :size="13" /></button></div><a href="/docs/x-identity-setup.html" target="_blank" rel="noopener noreferrer">Setup guide <ArrowUpRight :size="13" /></a></div>
+          <div class="ra-mobile-wallet"><button :disabled="busy" @click="emit('connect')"><Wallet :size="15" />{{ walletAddress ? shortAddress(walletAddress) : 'Connect wallet' }}<ArrowUpRight :size="12" /></button><span v-if="walletAddress">{{ tokenBalance !== null ? displayAmount(tokenBalance, 'tUSD') : '—' }} tUSD · {{ walletBalance || '—' }} test ETH</span><button :disabled="busy || !config" @click="faucet"><Gift :size="14" /> Get 1,000 tUSD</button><small>Mock tokens · once per 24h · testnet gas applies</small><a href="https://faucet.testnet.chain.robinhood.com" target="_blank" rel="noopener noreferrer">Get test ETH <ExternalLink :size="11" /></a></div>
           <div v-if="busy" class="ra-progress" role="status"><LoaderCircle :size="16" />{{ operation }}<span>Keep this window open.</span></div>
           <div v-if="error" class="ra-feedback ra-error" role="alert">{{ error }}</div><div v-if="notice" class="ra-feedback ra-success" role="status">{{ notice }}</div><a v-if="txHash" class="ra-tx-link" :href="`${EXPLORER}/tx/${txHash}`" target="_blank" rel="noopener noreferrer">View transaction receipt <ExternalLink :size="13" /></a>
-          <section v-if="tab === 'activity' && ledger.length" class="ra-ledger" aria-label="Onchain asset totals"><div class="ra-ledger-heading"><h3>Follow the value.</h3><p>Separate asset totals ? includes engineering tests</p></div><div class="ra-ledger-grid"><article v-for="item in ledger" :key="item.asset"><strong><span>{{ item.asset === 'ETH' ? '>' : '$' }}</span>{{ item.asset === 'ETH' ? 'Test ETH' : 'tUSD ? mock token' }}</strong><dl><div><dt>In escrow</dt><dd>{{ displayAmount(item.escrowed, item.asset) }}</dd></div><div><dt>Paid to creators</dt><dd>{{ displayAmount(item.claimed, item.asset) }}</dd></div><div><dt>Protocol fees paid</dt><dd>{{ displayAmount(item.fees, item.asset) }}</dd></div></dl></article></div></section>
+          <section v-if="tab === 'activity' && ledger.length" class="ra-ledger" aria-label="Onchain asset totals"><div class="ra-ledger-heading"><h3>Follow the value.</h3><p>Separate asset totals · includes engineering tests</p></div><div class="ra-ledger-grid"><article v-for="item in ledger" :key="item.asset"><strong><span>{{ item.asset === 'ETH' ? '◇' : '$' }}</span>{{ item.asset === 'ETH' ? 'Test ETH' : 'tUSD · mock token' }}</strong><dl><div><dt>In escrow</dt><dd>{{ displayAmount(item.escrowed, item.asset) }}</dd></div><div><dt>Paid to creators</dt><dd>{{ displayAmount(item.claimed, item.asset) }}</dd></div><div><dt>Protocol fees paid</dt><dd>{{ displayAmount(item.fees, item.asset) }}</dd></div></dl></article></div></section>
 
           <div class="ra-work-grid" :class="{ 'has-receipt': selected }">
             <section v-if="tab === 'send'" class="ra-compose">
               <form @submit.prevent="fund">
-                <div class="ra-form-heading"><span class="ra-form-number">01</span><div><h3>Find the good.</h3><p>Pick a public X post. We鈥檒l find its author.</p></div></div>
-                <label for="ra-post-url">Post URL</label><div class="ra-url-input"><Link2 :size="17" /><input id="ra-post-url" v-model="postUrl" type="url" placeholder="https://x.com/creator/status/123" :disabled="busy || !xEnabled" autocomplete="off" /><button type="button" :disabled="busy || resolving || !xEnabled" @click="resolvePost">{{ resolving ? 'Finding...' : 'Find author' }} <ArrowRight :size="14" /></button></div>
+                <div class="ra-form-heading"><span class="ra-form-number">01</span><div><h3>Find the good.</h3><p>Pick a public X post. We’ll find its author.</p></div></div>
+                <label for="ra-post-url">Post URL</label><div class="ra-url-input"><Link2 :size="17" /><input id="ra-post-url" v-model="postUrl" type="url" placeholder="https://x.com/creator/status/…" :disabled="busy || !xEnabled" autocomplete="off" /><button type="button" :disabled="busy || resolving || !xEnabled" @click="resolvePost">{{ resolving ? 'Finding…' : 'Find author' }} <ArrowRight :size="14" /></button></div>
                 <div v-if="post" class="ra-post-preview"><div><span class="ra-avatar">{{ post.username[0].toUpperCase() }}</span><div><strong>@{{ post.username }}</strong><small>Author ID {{ post.authorId }}</small></div><Check :size="17" /></div><p>{{ post.text }}</p><a :href="`https://x.com/${post.username}/status/${post.postId}`" target="_blank" rel="noopener noreferrer">See the original <ArrowUpRight :size="12" /></a></div>
-                <div v-else class="ra-post-empty"><span>+</span><p>The right words can make someone&apos;s day.<br>So can a little appreciation.</p></div>
+                <div v-else class="ra-post-empty"><span>✳</span><p>The right words can make someone’s day.<br>So can a little appreciation.</p></div>
                 <div class="ra-form-heading"><span class="ra-form-number">02</span><div><h3>Put something behind it.</h3><p>No creator wallet needed at funding.</p></div></div>
-                <div class="ra-asset-choice" role="group" aria-label="Reward asset"><button type="button" :disabled="busy" :class="{ active: asset === 'tUSD' }" @click="asset = 'tUSD'"><span class="ra-asset-icon">$</span><span>tUSD<small>Mock dollar ? 6 decimals</small></span><Check v-if="asset === 'tUSD'" :size="16" /></button><button type="button" :disabled="busy" :class="{ active: asset === 'ETH' }" @click="asset = 'ETH'"><span class="ra-asset-icon">&gt;</span><span>Test ETH<small>Native testnet asset</small></span><Check v-if="asset === 'ETH'" :size="16" /></button></div>
-                <label for="ra-amount">Reward amount</label><div class="ra-amount-input"><input id="ra-amount" v-model="amount" inputmode="decimal" :disabled="busy || !xEnabled" /><span>{{ asset === 'ETH' ? 'test ETH' : 'tUSD' }}</span></div><div class="ra-presets"><button v-for="value in asset === 'ETH' ? ['0.0001', '0.001', '0.005'] : ['5', '10', '25', '100']" :key="value" type="button" :disabled="busy" @click="amount = value">{{ value }}</button><small>Test assets only 路 no monetary value</small></div>
-                <label for="ra-note" class="ra-note-label">A little note <span>{{ countNote }}/140 路 public onchain</span></label><textarea id="ra-note" v-model="note" rows="3" placeholder="This was the explanation I needed. Thank you." :disabled="busy || !xEnabled" :aria-invalid="!validPublicNote(note)" /><small class="ra-note-help">Optional. Never include private information.</small>
-                <div class="ra-fee-summary"><div><span>Creator receives</span><strong>{{ breakdown ? displayAmount(breakdown.creator, asset) : '' }} {{ asset === 'ETH' ? 'test ETH' : 'tUSD' }}</strong></div><div><span>Protocol fee 路 3% on claim</span><span>{{ breakdown ? displayAmount(breakdown.fee, asset) : '' }} {{ asset === 'ETH' ? 'test ETH' : 'tUSD' }}</span></div><div><span>Unclaimed after 90 days</span><span>100% refundable to you</span></div></div>
+                <div class="ra-asset-choice" role="group" aria-label="Reward asset"><button type="button" :disabled="busy" :class="{ active: asset === 'tUSD' }" @click="asset = 'tUSD'"><span class="ra-asset-icon">$</span><span>tUSD<small>Mock dollar · 6 decimals</small></span><Check v-if="asset === 'tUSD'" :size="16" /></button><button type="button" :disabled="busy" :class="{ active: asset === 'ETH' }" @click="asset = 'ETH'"><span class="ra-asset-icon">◇</span><span>Test ETH<small>Native testnet asset</small></span><Check v-if="asset === 'ETH'" :size="16" /></button></div>
+                <label for="ra-amount">Reward amount</label><div class="ra-amount-input"><input id="ra-amount" v-model="amount" inputmode="decimal" :disabled="busy || !xEnabled" /><span>{{ asset === 'ETH' ? 'test ETH' : 'tUSD' }}</span></div><div class="ra-presets"><button v-for="value in asset === 'ETH' ? ['0.0001', '0.001', '0.005'] : ['5', '10', '25', '100']" :key="value" type="button" :disabled="busy" @click="amount = value">{{ value }}</button><small>Test assets only · no monetary value</small></div>
+                <label for="ra-note" class="ra-note-label">A little note <span>{{ countNote }}/140 · public onchain</span></label><textarea id="ra-note" v-model="note" rows="3" placeholder="This was the explanation I needed. Thank you." :disabled="busy || !xEnabled" :aria-invalid="!validPublicNote(note)" /><small class="ra-note-help">Optional. Never include private information.</small>
+                <div class="ra-fee-summary"><div><span>Creator receives</span><strong>{{ breakdown ? displayAmount(breakdown.creator, asset) : '—' }} {{ asset === 'ETH' ? 'test ETH' : 'tUSD' }}</strong></div><div><span>Protocol fee · 3% on claim</span><span>{{ breakdown ? displayAmount(breakdown.fee, asset) : '—' }} {{ asset === 'ETH' ? 'test ETH' : 'tUSD' }}</span></div><div><span>Unclaimed after 90 days</span><span>100% refundable to you</span></div></div>
                 <label class="ra-checkbox"><input v-model="acknowledged" type="checkbox" :disabled="busy || !xEnabled" /><span>I checked the author. The creator receives 97% on claim. Unclaimed funds are refundable after 90 days. Network gas is separate.</span></label>
                 <button class="button primary full-width" :disabled="busy || !config || !xEnabled || !post || !validPublicNote(note)" type="submit">{{ !xEnabled ? 'Author rewards await configuration' : busy ? operation : walletAddress ? asset === 'tUSD' ? 'Approve & fund reward' : 'Fund reward' : 'Connect wallet to fund' }}<ArrowUpRight :size="18" /></button>
                 <p class="ra-form-footnote">{{ asset === 'tUSD' ? 'tUSD is a faucet-minted mock token, not USDG, USDC, or a redeemable dollar. Approval is limited to the reward amount.' : 'Your wallet sends native test ETH directly into the escrow.' }}</p>
@@ -384,21 +384,21 @@ onUnmounted(() => { if (timer) clearInterval(timer); provider.destroy(); documen
             </section>
 
             <section v-else class="ra-feed">
-              <div class="ra-feed-header"><div><h3>{{ tab === 'received' ? 'Your author inbox' : tab === 'sent' ? 'Your reward history' : 'The latest good' }}</h3><p>{{ lastRefreshed ? `Updated ${lastRefreshed} 路 newest first` : 'Live contract records 路 newest first' }}</p></div><span class="ra-count-pill">{{ rows.length }} loaded</span></div>
+              <div class="ra-feed-header"><div><h3>{{ tab === 'received' ? 'Your author inbox' : tab === 'sent' ? 'Your reward history' : 'The latest good' }}</h3><p>{{ lastRefreshed ? `Updated ${lastRefreshed} · newest first` : 'Live contract records · newest first' }}</p></div><span class="ra-count-pill">{{ rows.length }} loaded</span></div>
               <div v-if="filteredNeedsIdentity" class="ra-empty"><Inbox :size="34" /><h3>A thank-you with your name on it.</h3><p>Sign in with X to filter rewards by your permanent author ID.</p><button class="button primary" :disabled="!xEnabled" @click="login">{{ xEnabled ? 'Sign in with X' : 'X login awaits configuration' }}<ArrowUpRight :size="15" /></button><button class="ra-empty-link" @click="changeTab('activity')">Browse public activity <ArrowRight :size="13" /></button></div>
               <div v-else-if="filteredNeedsWallet" class="ra-empty"><Wallet :size="34" /><h3>See where your appreciation went.</h3><p>Connect the wallet you used to fund rewards.</p><button class="button primary" @click="emit('connect')">Connect wallet <ArrowUpRight :size="15" /></button></div>
-              <template v-else><div v-if="feedError" class="ra-feedback ra-error" role="alert">{{ feedError }}</div><div v-if="!rows.length && !feedBusy && !feedError" class="ra-empty"><Heart :size="34" /><h3>{{ hasMore ? 'Keep looking.' : 'A little quiet, for now.' }}</h3><p>{{ hasMore ? 'No matching rewards in this page. Load more to continue scanning older records.' : 'No matching rewards are recorded here yet. Every real reward will appear with its own receipt.' }}</p></div><div class="ra-reward-list"><button v-for="reward in rows" :key="reward.id" class="ra-reward-row" :class="{ selected: selected?.id === reward.id }" :disabled="busy" @click="openReceipt(reward.id)"><span class="ra-row-icon"><ArrowDownLeft v-if="reward.status === 2" :size="19" /><RefreshCw v-else-if="reward.status === 3" :size="18" /><Gift v-else :size="19" /></span><span class="ra-row-info"><strong>Reward #{{ reward.id }} <small>Post {{ reward.postId }}</small></strong><span>{{ reward.note || 'For X author' }}</span><small>{{ rewardStatus(reward, now) }} ? {{ shortAddress(reward.payer) }}</small></span><span class="ra-row-amount"><strong>{{ displayAmount(reward.amount, rewardAsset(reward.token)) }}</strong><small>{{ rewardAsset(reward.token) === 'ETH' ? 'test ETH' : 'tUSD' }}</small></span><ArrowUpRight :size="15" /></button></div><div v-if="feedBusy" class="ra-loading" role="status"><LoaderCircle :size="18" /> Reading onchain rewards</div><button v-if="hasMore" class="ra-load-more" :disabled="feedBusy || busy" @click="loadFeed(true)">Load older rewards <ArrowDownLeft :size="15" /></button></template>
+              <template v-else><div v-if="feedError" class="ra-feedback ra-error" role="alert">{{ feedError }}</div><div v-if="!rows.length && !feedBusy && !feedError" class="ra-empty"><Heart :size="34" /><h3>{{ hasMore ? 'Keep looking.' : 'A little quiet, for now.' }}</h3><p>{{ hasMore ? 'No matching rewards in this page. Load more to continue scanning older records.' : 'No matching rewards are recorded here yet. Every real reward will appear with its own receipt.' }}</p></div><div class="ra-reward-list"><button v-for="reward in rows" :key="reward.id" class="ra-reward-row" :class="{ selected: selected?.id === reward.id }" :disabled="busy" @click="openReceipt(reward.id)"><span class="ra-row-icon"><ArrowDownLeft v-if="reward.status === 2" :size="19" /><RefreshCw v-else-if="reward.status === 3" :size="18" /><Gift v-else :size="19" /></span><span class="ra-row-info"><strong>Reward #{{ reward.id }} <small>Post {{ reward.postId }}</small></strong><span>{{ reward.note || `For X author ${reward.authorId}` }}</span><small>{{ rewardStatus(reward, now) }} · {{ shortAddress(reward.payer) }}</small></span><span class="ra-row-amount"><strong>{{ displayAmount(reward.amount, rewardAsset(reward.token)) }}</strong><small>{{ rewardAsset(reward.token) === 'ETH' ? 'test ETH' : 'tUSD' }}</small></span><ArrowUpRight :size="15" /></button></div><div v-if="feedBusy" class="ra-loading" role="status"><LoaderCircle :size="18" /> Reading onchain rewards…</div><button v-if="hasMore" class="ra-load-more" :disabled="feedBusy || busy" @click="loadFeed(true)">Load older rewards <ArrowDownLeft :size="15" /></button></template>
               <p class="ra-feed-disclaimer">Testnet records include engineering checks. Counts are not customers, revenue or verified content endorsements. ETH and tUSD amounts are shown separately.</p>
             </section>
 
             <aside class="ra-receipt-panel">
               <form class="ra-lookup" @submit.prevent="openReceipt()"><label for="ra-receipt-id">Open a receipt</label><div><input id="ra-receipt-id" v-model.trim="lookupId" inputmode="numeric" placeholder="Reward ID" :disabled="busy" /><button :disabled="busy || receiptBusy || !config" aria-label="Look up reward receipt"><ArrowRight :size="18" /></button></div></form>
-              <div v-if="receiptBusy" class="ra-loading" role="status"><LoaderCircle :size="17" /> Opening receipt</div>
-              <article v-if="selected" class="ra-receipt"><div class="ra-receipt-heading"><span>THE APPRECIATION RECEIPT</span><Sparkles :size="17" /></div><div class="ra-receipt-id">#{{ selected.id }} <span :class="{ settled: selected.status > 1 }">{{ rewardStatus(selected, now) }}</span></div><div class="ra-receipt-value">{{ displayAmount(selected.amount, rewardAsset(selected.token)) }}<small>{{ rewardAsset(selected.token) === 'ETH' ? 'test ETH' : 'tUSD' }}</small></div><p v-if="selected.note" class="ra-receipt-note">&quot;{{ selected.note }}&quot;</p><dl><div><dt>Post</dt><dd><a :href="`https://x.com/i/status/${selected.postId}`" target="_blank" rel="noopener noreferrer">{{ selected.postId }} <ArrowUpRight :size="11" /></a></dd></div><div><dt>X author ID</dt><dd>{{ selected.authorId }}</dd></div><div><dt>From</dt><dd :title="selected.payer">{{ shortAddress(selected.payer) }}</dd></div><div><dt>Claim deadline</dt><dd>{{ formatDate(selected.expiresAt) }}</dd></div><div v-if="receiptSplit"><dt>Creator ? 97%</dt><dd>{{ amountText(selected, receiptSplit.creator) }}</dd></div><div v-if="receiptSplit"><dt>Fee on claim ? 3%</dt><dd>{{ amountText(selected, receiptSplit.fee) }}</dd></div></dl><div class="ra-receipt-share"><button :disabled="busy" @click="copyReceipt"><Copy :size="13" /> Copy receipt</button><button :disabled="busy" @click="shareReceipt">Share on X <ArrowUpRight :size="13" /></button></div><small>Sharing opens X's composer. You decide whether to publish.</small></article>
-              <div v-if="selected && activeReward && !expiredReward" class="ra-settle"><label v-if="relayEnabled" class="ra-checkbox"><input v-model="useRelay" type="checkbox" :disabled="busy" /><span>Use sponsored claim gas. The service submits the signed claim.</span></label><p v-else>Claim gas sponsorship is not configured. The receiving wallet pays testnet gas.</p><button class="button primary full-width" :disabled="busy || !xEnabled || (!!user && !ownAuthor)" @click="claim">{{ !xEnabled ? 'X claims await configuration' : !user ? 'Sign in as author to claim' : !ownAuthor ? 'Use the rewarded X account' : !walletAddress ? 'Connect receiving wallet' : useRelay && relayEnabled ? 'Verify wallet & claim 路 gas covered' : 'Verify wallet & claim' }}<ArrowUpRight :size="15" /></button><small>Claiming relies on the operator鈥檚 X identity attestation. The contract does not verify X itself.</small></div>
+              <div v-if="receiptBusy" class="ra-loading" role="status"><LoaderCircle :size="17" /> Opening receipt…</div>
+              <article v-if="selected" class="ra-receipt"><div class="ra-receipt-heading"><span>THE APPRECIATION RECEIPT</span><Sparkles :size="17" /></div><div class="ra-receipt-id">#{{ selected.id }} <span :class="{ settled: selected.status > 1 }">{{ rewardStatus(selected, now) }}</span></div><div class="ra-receipt-value">{{ displayAmount(selected.amount, rewardAsset(selected.token)) }}<small>{{ rewardAsset(selected.token) === 'ETH' ? 'test ETH' : 'tUSD' }}</small></div><p v-if="selected.note" class="ra-receipt-note">“{{ selected.note }}”</p><dl><div><dt>Post</dt><dd><a :href="`https://x.com/i/status/${selected.postId}`" target="_blank" rel="noopener noreferrer">{{ selected.postId }} <ArrowUpRight :size="11" /></a></dd></div><div><dt>X author ID</dt><dd>{{ selected.authorId }}</dd></div><div><dt>From</dt><dd :title="selected.payer">{{ shortAddress(selected.payer) }}</dd></div><div><dt>Claim deadline</dt><dd>{{ formatDate(selected.expiresAt) }}</dd></div><div v-if="receiptSplit"><dt>Creator · 97%</dt><dd>{{ amountText(selected, receiptSplit.creator) }}</dd></div><div v-if="receiptSplit"><dt>Fee on claim · 3%</dt><dd>{{ amountText(selected, receiptSplit.fee) }}</dd></div></dl><div class="ra-receipt-share"><button :disabled="busy" @click="copyReceipt"><Copy :size="13" /> Copy receipt</button><button :disabled="busy" @click="shareReceipt">Share on 𝕏 <ArrowUpRight :size="13" /></button></div><small>Sharing opens X’s composer. You decide whether to publish.</small></article>
+              <div v-if="selected && activeReward && !expiredReward" class="ra-settle"><label v-if="relayEnabled" class="ra-checkbox"><input v-model="useRelay" type="checkbox" :disabled="busy" /><span>Use sponsored claim gas. The service submits the signed claim.</span></label><p v-else>Claim gas sponsorship is not configured. The receiving wallet pays testnet gas.</p><button class="button primary full-width" :disabled="busy || !xEnabled || (!!user && !ownAuthor)" @click="claim">{{ !xEnabled ? 'X claims await configuration' : !user ? 'Sign in as author to claim' : !ownAuthor ? 'Use the rewarded X account' : !walletAddress ? 'Connect receiving wallet' : useRelay && relayEnabled ? 'Verify wallet & claim · gas covered' : 'Verify wallet & claim' }}<ArrowUpRight :size="15" /></button><small>Claiming relies on the operator’s X identity attestation. The contract does not verify X itself.</small></div>
               <div v-else-if="selected && activeReward && expiredReward" class="ra-settle"><p>The 90-day claim window has ended. The original sender can recover the full amount.</p><button class="button primary full-width" :disabled="busy || (!!walletAddress && !ownPayer)" @click="refund">{{ !walletAddress ? 'Connect sender wallet' : ownPayer ? 'Refund full reward' : 'Only the sender can refund' }}<ArrowUpRight :size="15" /></button><small>No protocol fee on refund. Network gas applies.</small></div>
               <div v-else-if="selected" class="ra-settled-note"><CircleCheck :size="19" /><span>{{ selected.status === 2 ? 'Claimed. The creator and protocol fee have been paid.' : 'Refunded in full to the original sender.' }}</span></div>
-              <div v-else class="ra-good-note"><span>+</span><h3>A thank-you.<br>With a paper trail.</h3><p>Every reward has a public receipt. Open one to see its author, amount, note and deadline.</p><div><ShieldCheck :size="16" /><span>3% only on successful claims</span></div><div><Clock3 :size="16" /><span>Refundable after 90 days</span></div><div><Link2 :size="16" /><span>Visible onchain, always</span></div></div>
+              <div v-else class="ra-good-note"><span>✳</span><h3>A thank-you.<br>With a paper trail.</h3><p>Every reward has a public receipt. Open one to see its author, amount, note and deadline.</p><div><ShieldCheck :size="16" /><span>3% only on successful claims</span></div><div><Clock3 :size="16" /><span>Refundable after 90 days</span></div><div><Link2 :size="16" /><span>Visible onchain, always</span></div></div>
               <a v-if="config" class="ra-contract-link" :href="`${EXPLORER}/address/${config.address}`" target="_blank" rel="noopener noreferrer">Inspect the rewards contract <ExternalLink :size="12" /></a>
             </aside>
           </div>
@@ -408,5 +408,3 @@ onUnmounted(() => { if (timer) clearInterval(timer); provider.destroy(); documen
     </div>
   </dialog>
 </template>
-
-

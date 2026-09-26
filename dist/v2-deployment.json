@@ -1,6 +1,6 @@
-{
-  "project": "Voxdue",
-  "contractName": "VoxdueRewards",
+﻿{
+  "project": "Voxaura",
+  "contractName": "VoxauraRewards",
   "version": "2",
   "environment": "testnet",
   "network": {
@@ -35,7 +35,7 @@
   "constructorArguments": "0x0000000000000000000000008b3283a9291373069f79508da59001e807bb394f0000000000000000000000008b3283a9291373069f79508da59001e807bb394f00000000000000000000000096c7aece3349392a1e51e47d9ed421e606bb892f",
   "explorerUrl": "https://explorer.testnet.chain.robinhood.com/address/0x4FE62e5e94f3351c9325A1aBad150a1529DfEb6C",
   "domain": {
-    "name": "Voxdue Rewards",
+    "name": "Voxaura Rewards",
     "version": "2",
     "chainId": 46630,
     "verifyingContract": "0x4FE62e5e94f3351c9325A1aBad150a1529DfEb6C"
@@ -606,7 +606,7 @@
           "type": "uint64"
         },
         {
-          "internalType": "enum VoxdueRewards.Status",
+          "internalType": "enum VoxauraRewards.Status",
           "name": "status",
           "type": "uint8"
         },
@@ -690,7 +690,7 @@
   "token": {
     "contractName": "MockUSD",
     "address": "0x96c7aECe3349392a1E51E47D9Ed421e606Bb892f",
-    "name": "Voxdue Test USD - No Value",
+    "name": "Voxaura Test USD - No Value",
     "symbol": "tUSD",
     "decimals": 6,
     "abi": [
@@ -1085,3 +1085,4 @@
     "checkedAt": "2026-09-18T11:26:01.331Z"
   }
 }
+

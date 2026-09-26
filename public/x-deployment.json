@@ -1,5 +1,5 @@
-{
-  "project": "Voxdue",
+﻿{
+  "project": "Voxaura",
   "contractName": "XPostRewardEscrow",
   "version": "0.1.0",
   "environment": "testnet",
@@ -35,7 +35,7 @@
   "identityVerification": "Trusted off-chain X OAuth/API attestation. Disabled in app until server credentials are configured.",
   "trustModel": "Immutable attestor can authorize any active reward. No admin withdrawal or upgrade. Attestor custody is security-critical.",
   "domain": {
-    "name": "Voxdue X Rewards",
+    "name": "Voxaura X Rewards",
     "version": "1",
     "chainId": 46630,
     "verifyingContract": "0xfa0095Af3f8129710E803CE5c9855A4d1db1633F"
@@ -518,3 +518,4 @@
     "explorer": "https://explorer.testnet.chain.robinhood.com/address/0xfa0095Af3f8129710E803CE5c9855A4d1db1633F?tab=contract"
   }
 }
+

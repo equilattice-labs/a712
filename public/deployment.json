@@ -1,4 +1,4 @@
-{
+﻿{
   "project": "Post rewards wallet pilot",
   "contractName": "PostRewardEscrow",
   "version": "0.1.0",
@@ -340,3 +340,4 @@
     "explorer": "https://explorer.testnet.chain.robinhood.com/address/0x1679d36847c323cffA05eFa4448c73309a2D97d9?tab=contract"
   }
 }
+

@@ -45,3 +45,5 @@ export function normalizeReward(data: any, fallbackId = ''): RewardRecord {
   if (status !== 0 && (!/^\d{1,30}$/.test(postId) || !/^\d{1,30}$/.test(authorId) || typeof data.note !== 'string')) throw new Error('The network returned invalid post information.')
   return { id, payer: getAddress(data.payer), token: getAddress(data.token), amount, expiresAt, status, postId, authorId, note: String(data.note ?? '') }
 }
+
+

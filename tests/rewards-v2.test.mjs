@@ -22,7 +22,7 @@ test('amount validation rejects unsupported precision and misleading numeric for
 });
 
 test('public notes count Unicode characters and reject invalid scalar values', () => {
-  const emoji = '🌱'.repeat(140);
+  const emoji = '🌟'.repeat(140);
   assert.equal(noteLength(emoji), 140);
   assert.equal(validPublicNote(emoji), true);
   assert.equal(validPublicNote(emoji + 'a'), false);
@@ -38,3 +38,4 @@ test('receipt normalization preserves large integer amounts and expiry boundary'
   assert.equal(rewardStatus({ ...record, status: 2 }, 3000), 'Claimed');
   assert.throws(() => normalizeReward({ ...record, token: 'wrong' }));
 });
+

@@ -1,5 +1,5 @@
 {
-  "name": "voxdue-website",
+  "name": "Voxaura-website",
   "private": true,
   "version": "0.1.0",
   "type": "module",
@@ -27,3 +27,4 @@
     "vue-tsc": "^3.0.8"
   }
 }
+

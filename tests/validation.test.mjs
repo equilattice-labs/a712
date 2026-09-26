@@ -1,4 +1,4 @@
-import test from 'node:test';
+﻿import test from 'node:test';
 import assert from 'node:assert/strict';
 import { parsePostUrl, friendlyError } from '../src/lib.ts';
 
@@ -17,3 +17,4 @@ test('wallet rejection and insufficient funds give actionable, non-sensitive err
   assert.match(friendlyError({ code: 'CALL_EXCEPTION', data: 'private implementation detail' }), /contract rejected/);
   assert.ok(friendlyError({ message: 'a'.repeat(1000) }).length <= 220);
 });
+

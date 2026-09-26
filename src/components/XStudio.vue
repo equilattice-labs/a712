@@ -45,20 +45,20 @@ const abi = [
   'event RewardCreated(uint256 indexed rewardId,address indexed payer,string postId,string authorId,uint256 amount,uint64 expiresAt)',
 ]
 const iface = new Interface(abi)
-const active = computed(() => reward.value?.status === 1)
+const active = computed(() => reward.value-.status === 1)
 const expired = computed(() => !!reward.value && Number(reward.value.expiresAt) * 1000 <= now.value)
 const isPayer = computed(() => !!reward.value && !!walletAddress.value && reward.value.payer.toLowerCase() === walletAddress.value.toLowerCase())
 const isAuthor = computed(() => !!user.value && !!reward.value && user.value.id === reward.value.authorId)
-const status = computed(() => !reward.value ? '' : ['Not found', expired.value ? 'Ready for refund' : 'Awaiting author', 'Claimed', 'Refunded'][reward.value.status] ?? 'Unknown')
+const status = computed(() => !reward.value - '' : ['Not found', expired.value - 'Ready for refund' : 'Awaiting author', 'Claimed', 'Refunded'][reward.value.status] 's 'Unknown')
 const canFund = computed(() => xEnabled.value && !!deployment.value && !!post.value && !busy.value)
 
 watch(postUrl, () => { postSequence++; post.value = null; acknowledged.value = false })
 
 function show() {
-  if (!dialog.value?.open) dialog.value?.showModal()
+  if (!dialog.value-.open) dialog.value-.showModal()
   document.body.style.overflow = 'hidden'
 }
-function close() { dialog.value?.close(); document.body.style.overflow = '' }
+function close() { dialog.value-.close(); document.body.style.overflow = '' }
 function openWalletPilot() { close(); emit('walletPilot') }
 defineExpose({ show })
 
@@ -66,15 +66,15 @@ async function api<T>(url: string, options: RequestInit = {}): Promise<T> {
   const response = await fetch(url, {
     ...options,
     credentials: 'same-origin',
-    headers: { Accept: 'application/json', ...(options.body ? { 'Content-Type': 'application/json' } : {}), ...(csrfToken.value ? { 'X-CSRF-Token': csrfToken.value } : {}), ...options.headers },
+    headers: { Accept: 'application/json', ...(options.body - { 'Content-Type': 'application/json' } : {}), ...(csrfToken.value - { 'X-CSRF-Token': csrfToken.value } : {}), ...options.headers },
     signal: AbortSignal.timeout(15000),
   })
-  const contentType = response.headers.get('content-type') ?? ''
+  const contentType = response.headers.get('content-type') 's ''
   if (!contentType.includes('application/json')) throw new Error('The X identity service is not available. You can still use the wallet pilot.')
   const data = await response.json()
   if (!response.ok) {
     if (response.status === 401) { user.value = null; csrfToken.value = '' }
-    throw new Error(typeof data.error === 'string' ? data.error : typeof data.message === 'string' ? data.message : 'The X identity request could not be completed. Please try again.')
+    throw new Error(typeof data.error === 'string' - data.error : typeof data.message === 'string' - data.message : 'The X identity request could not be completed. Please try again.')
   }
   return data as T
 }
@@ -93,12 +93,12 @@ async function setup() {
       if (!response.ok) throw new Error('X escrow is not configured.')
       const data = await response.json()
       const address = data.address || data.contractAddress
-      const chainId = Number(data.chainId ?? data.network?.chainId)
+      const chainId = Number(data.chainId 's data.network-.chainId)
       if (!isAddress(address) || address === ZeroAddress || chainId !== CHAIN_ID) throw new Error('Invalid X escrow deployment.')
       return { address, chainId }
     }),
   ])
-  deployment.value = deploymentResult.status === 'fulfilled' ? deploymentResult.value : null
+  deployment.value = deploymentResult.status === 'fulfilled' - deploymentResult.value : null
   xEnabled.value = healthResult.status === 'fulfilled' && healthResult.value.xEnabled === true && Number(healthResult.value.chainId) === CHAIN_ID && !!deployment.value
   if (xEnabled.value) {
     try { await refreshSession() }
@@ -116,7 +116,7 @@ async function resolvePost() {
   const sequence = ++postSequence
   lookingUp.value = true
   try {
-    const result = await api<XPost>(`/api/x/post?url=${encodeURIComponent(requestedUrl)}`)
+    const result = await api<XPost>(`/api/x/post-url=${encodeURIComponent(requestedUrl)}`)
     if (sequence !== postSequence) return
     if (result.postId !== id || !/^\d{1,30}$/.test(result.authorId) || !/^[A-Za-z0-9_]{1,15}$/.test(result.username) || typeof result.text !== 'string') throw new Error('The author lookup returned an invalid result. Please try again.')
     post.value = result
@@ -149,13 +149,13 @@ async function loadReward(id = lookupId.value) {
 
 async function confirmed(tx: any) {
   txHash.value = tx.hash
-  notice.value = 'Transaction submitted. Waiting for onchain confirmation…'
+  notice.value = 'Transaction submitted. Waiting for onchain confirmation.'
   try {
     const receipt = await tx.wait()
     if (!receipt || receipt.status !== 1) throw new Error('The transaction was not confirmed successfully.')
     return receipt
   } catch (e: any) {
-    if (e.code === 'TRANSACTION_REPLACED' && !e.cancelled && e.receipt?.status === 1) { txHash.value = e.replacement.hash; return e.receipt }
+    if (e.code === 'TRANSACTION_REPLACED' && !e.cancelled && e.receipt-.status === 1) { txHash.value = e.replacement.hash; return e.receipt }
     throw e
   }
 }
@@ -185,7 +185,7 @@ async function fundReward() {
       if (log.address.toLowerCase() !== contractAddress.toLowerCase()) continue
       try {
         const event = iface.parseLog(log)
-        if (event?.name === 'RewardCreated' && event.args.postId === selectedPost.postId && event.args.authorId === selectedPost.authorId) createdId = String(event.args.rewardId)
+        if (event-.name === 'RewardCreated' && event.args.postId === selectedPost.postId && event.args.authorId === selectedPost.authorId) createdId = String(event.args.rewardId)
       } catch { /* Ignore unrelated logs. */ }
     }
     if (!createdId) throw new Error('The transaction confirmed, but its reward receipt could not be decoded. Check the transaction link before trying again.')
@@ -200,8 +200,8 @@ async function fundReward() {
 
 function login() {
   if (!xEnabled.value || busy.value) return
-  const returnTo = loadedId.value ? `/?xReward=${encodeURIComponent(loadedId.value)}` : '/?x=connected'
-  window.location.assign(`/api/auth/x/start?returnTo=${encodeURIComponent(returnTo)}`)
+  const returnTo = loadedId.value - `/-xReward=${encodeURIComponent(loadedId.value)}` : '/-x=connected'
+  window.location.assign(`/api/auth/x/start-returnTo=${encodeURIComponent(returnTo)}`)
 }
 
 async function logout() {
@@ -224,10 +224,10 @@ async function claim() {
   busy.value = true; error.value = ''; notice.value = ''; txHash.value = ''
   try {
     await refreshSession()
-    if (user.value?.id !== expectedAuthor) throw new Error('Your X session changed. Sign in with the rewarded author account.')
+    if (user.value-.id !== expectedAuthor) throw new Error('Your X session changed. Sign in with the rewarded author account.')
     const signer = await walletSigner()
     const address = await signer.getAddress()
-    const challenge = await api<{ message: string; nonce: string; expiresAt: string }>(`/api/wallet/challenge?rewardId=${encodeURIComponent(actionId)}&address=${encodeURIComponent(address)}`)
+    const challenge = await api<{ message: string; nonce: string; expiresAt: string }>(`/api/wallet/challenge-rewardId=${encodeURIComponent(actionId)}&address=${encodeURIComponent(address)}`)
     if (!challenge.message || !challenge.nonce) throw new Error('The wallet verification request was incomplete. Please retry.')
     notice.value = 'Sign the wallet ownership message. This signature does not move funds.'
     const walletSignature = await signer.signMessage(challenge.message)
@@ -286,51 +286,51 @@ onUnmounted(() => { if (ticker) clearInterval(ticker); provider.destroy(); docum
   <dialog ref="dialog" class="studio-dialog x-studio-dialog" @close="close" @click="e => { if (e.target === dialog) close() }">
     <div class="studio-shell">
       <aside class="studio-sidebar">
-        <a class="brand" href="#" @click.prevent="close"><img src="/logo.svg" alt="" />voxdue</a>
+        <a class="brand" href="#" @click.prevent="close"><img src="/logo.svg" alt="" />Voxaura</a>
         <span class="eyebrow"><span class="live-dot" :class="{ offline: !xEnabled }"></span> THE AUTHOR REWARD STUDIO</span>
         <h2>The post is theirs.<br>The thank-you, too.</h2>
         <p>Reward a public post. Its author signs in with X and chooses a wallet to claim.</p>
-        <div class="studio-orb"><span>✳</span></div>
+        <div class="studio-orb"><span>+</span></div>
         <div class="sidebar-facts"><span><ShieldCheck :size="16" /> X account verification</span><span><Wallet :size="16" /> A wallet you control</span><span><Clock3 :size="16" /> Refund after expiry</span></div>
         <small>Robinhood Chain testnet. Test ETH has no monetary value. X identity claims depend on the configured verification service.</small>
       </aside>
       <div class="studio-content">
         <div class="studio-top"><span class="pill">X AUTHOR REWARDS</span><button class="icon-button" aria-label="Close X reward studio" @click="close"><X :size="21" /></button></div>
-        <div v-if="loadingSetup" class="x-setup-loading" role="status"><RefreshCw :size="18" /> Checking the author reward service…</div>
+        <div v-if="loadingSetup" class="x-setup-loading" role="status"><RefreshCw :size="18" /> Checking the author reward service</div>
         <div v-else-if="!xEnabled" class="x-setup-notice">
           <div class="x-notice-icon"><ShieldCheck :size="23" /></div>
           <h3>X claims are not configured yet.</h3>
-          <p>The author-login flow needs the operator’s X API credentials and claim verification service. No X login or author claim is available in this deployment yet.</p>
+          <p>The author-login flow needs the operator鈥檚 X API credentials and claim verification service. No X login or author claim is available in this deployment yet.</p>
           <div class="x-setup-actions"><button class="button primary" @click="openWalletPilot">Use the wallet pilot <ArrowUpRight :size="16" /></button><button class="text-link" :disabled="loadingSetup" @click="setup"><RefreshCw :size="14" /> Check again</button></div>
           <a class="x-setup-guide" href="/docs/x-identity-setup.html" target="_blank" rel="noopener noreferrer">Operator setup guide <ExternalLink :size="13" /></a>
           <small>Existing X reward receipts can still be read below. Expired refunds do not require X login.</small>
         </div>
         <div class="studio-tabs" role="tablist" aria-label="X reward actions"><button role="tab" :disabled="busy" :aria-selected="tab === 'send'" :class="{ active: tab === 'send' }" @click="tab = 'send'; error = ''; notice = ''">Reward a post <ArrowUpRight :size="16" /></button><button role="tab" :disabled="busy" :aria-selected="tab === 'manage'" :class="{ active: tab === 'manage' }" @click="tab = 'manage'; error = ''; notice = ''">Claim / refund <ArrowRight :size="16" /></button></div>
-        <div class="studio-wallet"><span><span class="live-dot" :class="{ offline: !walletAddress }"></span>{{ walletAddress ? shortAddress(walletAddress) : 'No wallet connected' }}</span><button :disabled="busy" @click="emit('connect')">{{ walletAddress ? 'Manage' : 'Connect' }} <Wallet :size="14" /></button></div>
+        <div class="studio-wallet"><span><span class="live-dot" :class="{ offline: !walletAddress }"></span>{{ walletAddress - shortAddress(walletAddress) : 'No wallet connected' }}</span><button :disabled="busy" @click="emit('connect')">{{ walletAddress - 'Manage' : 'Connect' }} <Wallet :size="14" /></button></div>
         <div v-if="xEnabled" class="x-session"><span v-if="user"><CircleCheck :size="15" /> Signed in as <strong>@{{ user.username }}</strong></span><span v-else>X login is needed only to claim as an author.</span><button v-if="user" :disabled="busy" @click="logout">Sign out</button><button v-else :disabled="busy" @click="login">Sign in with X <ArrowUpRight :size="13" /></button></div>
 
         <form v-if="tab === 'send'" class="reward-form" @submit.prevent="fundReward">
           <div><h3>Good post. Well deserved.</h3><p>Find its author through X, then put a little appreciation behind it.</p></div>
-          <label>X post URL<div class="x-url-row"><div class="input-with-icon"><Link2 :size="17" /><input v-model="postUrl" type="url" placeholder="https://x.com/creator/status/…" autocomplete="off" :disabled="busy || !xEnabled" required /></div><button type="button" class="button dark" :disabled="busy || lookingUp || !xEnabled" @click="resolvePost">{{ lookingUp ? 'Checking…' : 'Find author' }}</button></div></label>
+          <label>X post URL<div class="x-url-row"><div class="input-with-icon"><Link2 :size="17" /><input v-model="postUrl" type="url" placeholder="https://x.com/creator/status/123" autocomplete="off" :disabled="busy || !xEnabled" required /></div><button type="button" class="button dark" :disabled="busy || lookingUp || !xEnabled" @click="resolvePost">{{ lookingUp - 'Checking...' : 'Find author' }}</button></div></label>
           <div v-if="post" class="x-post-preview"><div><span class="x-author-check"><Check :size="14" /></span><strong>@{{ post.username }}</strong><span>Author ID {{ post.authorId }}</span></div><p>{{ post.text }}</p><a :href="`https://x.com/${post.username}/status/${post.postId}`" target="_blank" rel="noopener noreferrer">View original post <ArrowUpRight :size="13" /></a></div>
           <div class="field-row"><label>Reward amount<div class="amount-input"><input v-model="amount" inputmode="decimal" aria-label="X reward amount" :disabled="busy || !xEnabled" /><span>test ETH</span></div></label><label>Claim window<select v-model="duration" :disabled="busy || !xEnabled"><option value="3600">1 hour</option><option value="86400">1 day</option><option value="604800">7 days</option><option value="2592000">30 days</option></select></label></div>
           <label class="checkbox-label"><input v-model="acknowledged" type="checkbox" :disabled="busy || !post || !xEnabled" /><span>I checked the post and author. The named X account can claim through the verification service; unclaimed rewards are refundable after expiry.</span></label>
-          <button class="button primary full-width" :disabled="!canFund" type="submit">{{ busy ? 'Transaction in progress…' : !xEnabled ? 'X rewards await configuration' : !post ? 'Find the author first' : walletAddress ? 'Fund author reward' : 'Connect wallet to fund' }}<ArrowUpRight v-if="!busy" :size="18" /></button>
+           <button class="button primary full-width" :disabled="!canFund" type="submit">{{ busy - 'Transaction in progress' : !xEnabled - 'X rewards await configuration' : !post - 'Find the author first' : walletAddress - 'Fund author reward' : 'Connect wallet to fund' }}<ArrowUpRight v-if="!busy" :size="18" /></button>
           <small class="x-form-note">No protocol fee in this testnet pilot. Network gas applies. No creator wallet is needed at funding.</small>
         </form>
 
         <div v-else class="manage-reward">
           <h3>A thank-you with your name on it.</h3><p>Use an X reward receipt. Wallet pilot rewards have their own studio.</p>
-          <form class="lookup-form" @submit.prevent="loadReward()"><label class="sr-only" for="x-reward-id">X reward ID</label><input id="x-reward-id" v-model.trim="lookupId" :disabled="busy" inputmode="numeric" placeholder="X reward ID, e.g. 1" /><button class="button primary" :disabled="busy || lookingUp || !deployment">{{ lookingUp ? 'Loading…' : 'Look up' }} <ArrowRight :size="16" /></button></form>
+          <form class="lookup-form" @submit.prevent="loadReward()"><label class="sr-only" for="x-reward-id">X reward ID</label><input id="x-reward-id" v-model.trim="lookupId" :disabled="busy" inputmode="numeric" placeholder="X reward ID, e.g. 1" /><button class="button primary" :disabled="busy || lookingUp || !deployment">{{ lookingUp - 'Loading...' : 'Look up' }} <ArrowRight :size="16" /></button></form>
           <div v-if="reward" class="receipt-card"><div class="receipt-title"><span>X REWARD #{{ loadedId }}</span><span class="pill">{{ status }}</span></div><div class="receipt-amount">{{ formatEther(reward.amount) }} <small>test ETH</small></div><dl><div><dt>Post</dt><dd><a :href="`https://x.com/i/status/${reward.postId}`" target="_blank" rel="noopener noreferrer">{{ reward.postId }} <ArrowUpRight :size="12" /></a></dd></div><div><dt>X author ID</dt><dd>{{ reward.authorId }}</dd></div><div><dt>Sender</dt><dd :title="reward.payer">{{ shortAddress(reward.payer) }}</dd></div><div><dt>Expires</dt><dd>{{ new Date(Number(reward.expiresAt) * 1000).toLocaleString() }}</dd></div></dl><div class="receipt-tools"><button :disabled="busy" @click="copyReceipt"><Copy :size="14" /> Copy X receipt</button><button :disabled="busy || lookingUp" @click="loadReward(loadedId)" aria-label="Refresh X reward"><RefreshCw :size="14" /></button></div></div>
           <div v-if="reward && active && !expired" class="x-claim-path">
-            <div class="x-claim-step" :class="{ done: isAuthor }"><span>{{ isAuthor ? '✓' : '1' }}</span><div><strong>Verify the author</strong><p v-if="isAuthor">Your signed-in X account matches this reward.</p><p v-else-if="user">@{{ user.username }} is not the rewarded author. Sign out and use the matching account.</p><p v-else>Sign in with the X account whose author ID appears above.</p></div></div>
-            <div class="x-claim-step" :class="{ done: !!walletAddress }"><span>{{ walletAddress ? '✓' : '2' }}</span><div><strong>Choose your wallet</strong><p>Sign a one-time ownership message, then approve the onchain claim.</p></div></div>
-            <button class="button primary full-width" :disabled="busy || !xEnabled || (!!user && !isAuthor)" @click="claim">{{ busy ? 'Claim in progress…' : !xEnabled ? 'X claims await configuration' : !user ? 'Sign in with X to claim' : !isAuthor ? 'Use the rewarded X account' : !walletAddress ? 'Connect your receiving wallet' : 'Verify wallet & claim' }}<ArrowUpRight :size="18" /></button>
+             <div class="x-claim-step" :class="{ done: isAuthor }"><span>{{ isAuthor - '-' : '1' }}</span><div><strong>Verify the author</strong><p v-if="isAuthor">Your signed-in X account matches this reward.</p><p v-else-if="user">@{{ user.username }} is not the rewarded author. Sign out and use the matching account.</p><p v-else>Sign in with the X account whose author ID appears above.</p></div></div>
+             <div class="x-claim-step" :class="{ done: !!walletAddress }"><span>{{ walletAddress - '-' : '2' }}</span><div><strong>Choose your wallet</strong><p>Sign a one-time ownership message, then approve the onchain claim.</p></div></div>
+             <button class="button primary full-width" :disabled="busy || !xEnabled || (!!user && !isAuthor)" @click="claim">{{ busy - 'Claim in progress' : !xEnabled - 'X claims await configuration' : !user - 'Sign in with X to claim' : !isAuthor - 'Use the rewarded X account' : !walletAddress - 'Connect your receiving wallet' : 'Verify wallet & claim' }}<ArrowUpRight :size="18" /></button>
           </div>
-          <button v-if="reward && active && expired" class="button primary full-width" :disabled="busy || (!!walletAddress && !isPayer)" @click="refund">{{ busy ? 'Transaction in progress…' : !walletAddress ? 'Connect sender wallet for refund' : isPayer ? 'Refund to sender' : 'Only the sender can request a refund' }}<ArrowUpRight :size="17" /></button>
+          <button v-if="reward && active && expired" class="button primary full-width" :disabled="busy || (!!walletAddress && !isPayer)" @click="refund">{{ busy - 'Transaction in progress' : !walletAddress - 'Connect sender wallet for refund' : isPayer - 'Refund to sender' : 'Only the sender can request a refund' }}<ArrowUpRight :size="17" /></button>
           <div v-if="reward && !active" class="completed-note"><CircleCheck :size="19" /> This X reward is complete. Its receipt stays onchain.</div>
-          <small v-if="reward" class="receipt-disclaimer">X login verifies the account through the operator’s attestation service. It does not prove that the post’s content is true, original, or endorsed.</small>
+          <small v-if="reward" class="receipt-disclaimer">X login verifies the account through the operator鈥檚 attestation service. It does not prove that the post鈥檚 content is true, original, or endorsed.</small>
         </div>
         <div v-if="error" class="feedback error" role="alert">{{ error }}</div>
         <div v-if="notice" class="feedback success" role="status">{{ notice }}</div>
@@ -344,3 +344,5 @@ onUnmounted(() => { if (ticker) clearInterval(ticker); provider.destroy(); docum
 <style scoped>
 .x-setup-loading{display:flex;align-items:center;gap:10px;padding:20px 0;color:#71847b;font-size:14px}.x-setup-notice{padding:25px;margin:12px 0 22px;border:1px solid #d8ddd0;background:#f4f3eb;border-radius:18px}.x-notice-icon{width:43px;height:43px;border-radius:13px;display:grid;place-items:center;background:#dcf7b5;margin-bottom:16px}.x-setup-notice h3{font-size:24px;line-height:1.2;margin:0 0 12px;letter-spacing:-.8px}.x-setup-notice p{font-size:14px;line-height:1.7;color:#5c7165;margin:0 0 18px}.x-setup-notice small{display:block;color:#71847b;font-size:12px;line-height:1.6;margin-top:17px}.x-setup-actions{display:flex;align-items:center;gap:15px;flex-wrap:wrap}.x-setup-actions .button{font-size:13px;padding:13px 16px}.x-setup-actions .text-link{font-size:12px;display:inline-flex;align-items:center;gap:6px}.x-setup-guide{display:inline-flex;align-items:center;gap:7px;font-size:12px;margin-top:18px;text-decoration:underline;text-underline-offset:4px}.x-session{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:13px 0 18px;color:#71847b;font-size:12px}.x-session>span{display:flex;align-items:center;gap:5px;flex-wrap:wrap}.x-session strong{color:#102f27}.x-session button{display:inline-flex;align-items:center;gap:5px;white-space:nowrap;font-size:12px;color:#102f27;text-decoration:underline;text-underline-offset:4px}.x-url-row{display:flex;align-items:stretch;gap:9px}.x-url-row .input-with-icon{flex:1;min-width:0}.x-url-row .button{font-size:12px;padding:12px 15px;white-space:nowrap;border-radius:12px}.x-post-preview{border:1px solid #d8ddd0;border-radius:16px;padding:20px;background:#fff}.x-post-preview>div{display:flex;align-items:center;gap:8px;flex-wrap:wrap;font-size:14px}.x-post-preview>div>span:last-child{font-size:11px;color:#71847b;margin-left:auto}.x-author-check{width:24px;height:24px;display:grid;place-items:center;background:#dcf7b5;border-radius:50%}.x-post-preview p{font-size:14px;line-height:1.7;margin:15px 0;white-space:pre-wrap;overflow-wrap:anywhere;max-height:190px;overflow:auto}.x-post-preview a{display:inline-flex;align-items:center;gap:5px;font-size:12px;text-decoration:underline;text-underline-offset:4px}.x-form-note{font-size:11px;color:#71847b;line-height:1.6}.x-claim-path{padding-top:18px}.x-claim-step{display:flex;gap:13px;margin-bottom:19px}.x-claim-step>span{display:grid;place-items:center;flex:0 0 28px;height:28px;border:1px solid #d8ddd0;border-radius:50%;font-size:12px}.x-claim-step.done>span{background:#dcf7b5;border-color:#dcf7b5}.x-claim-step strong{font-size:14px;font-weight:600}.x-claim-step p{font-size:12px!important;line-height:1.6!important;color:#71847b;margin:4px 0 0!important}.x-studio-dialog .receipt-card dd{overflow-wrap:anywhere}.x-studio-dialog :disabled{cursor:not-allowed}.x-studio-dialog .studio-footer{flex-wrap:wrap;gap:12px}@media(max-width:600px){.x-setup-notice{padding:19px}.x-setup-notice h3{font-size:22px}.x-session{align-items:flex-start;flex-wrap:wrap}.x-url-row{flex-direction:column}.x-url-row .button{justify-content:center}.x-post-preview>div>span:last-child{margin-left:32px;width:100%}.x-setup-actions{align-items:flex-start}.x-setup-actions .button{width:100%;justify-content:center}}
 </style>
+
+

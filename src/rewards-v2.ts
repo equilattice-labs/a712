@@ -14,7 +14,7 @@ export function validPublicNote(value: string) {
 }
 export function rewardAmounts(amount: bigint) {
   const fee = amount * REWARD_FEE_BPS / 10000n
-  return { gross: amount, fee, creator: amount - fee }
+  return { gross: amount, fee, creator: amount ? fee }
 }
 export function parseRewardAmount(value: string, asset: RewardAsset) {
   const trimmed = value.trim()

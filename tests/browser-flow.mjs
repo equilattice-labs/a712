@@ -45,7 +45,7 @@ await page.addInitScript(() => {
   window.addEventListener('eip6963:requestProvider', () => window.dispatchEvent(new CustomEvent('eip6963:announceProvider', { detail: { info: { uuid: 'local-qa-wallet', name: 'QA local wallet' }, provider } })));
 });
 await page.route('**/deployment.json', route => route.fulfill({ json: { address: deployedAddress, chainId: 46630 } }));
-await page.route('https://rpc.testnet.chain.Solana.com/**', async route => {
+await page.route('https://rpc.testnet.chain.robinhood.com/**', async route => {
   const body = route.request().postDataJSON();
   const handle = async request => {
     try { return { id: request.id, jsonrpc: '2.0', result: await evm.request({ method: request.method, params: request.params ?? [] }) }; }
@@ -63,10 +63,10 @@ try {
   await page.getByRole('button', { name: 'QA local wallet' }).click();
   await page.getByRole('button', { name: 'Wallet pilot', exact: true }).click();
   await page.getByLabel('X post URL', { exact: true }).fill('https://x.com/qa/status/123456789');
-  await page.getByLabel('Creator鈥檚 wallet address').fill('0x0');
+  await page.getByLabel("Creator's wallet address").fill('0x0');
   await page.getByRole('button', { name: 'Send reward', exact: true }).click();
   await page.getByRole('alert').filter({ hasText: 'valid, non-zero' }).waitFor();
-  await page.getByLabel('Creator鈥檚 wallet address').fill(address);
+  await page.getByLabel("Creator's wallet address").fill(address);
   await page.getByRole('checkbox').check();
   await page.getByRole('button', { name: 'Send reward', exact: true }).click();
   await page.getByText('Reward #1 is funded.', { exact: false }).waitFor({ timeout: 30000 });
@@ -95,8 +95,8 @@ try {
   await page.getByRole('button', { name: 'Look up' }).click();
   await page.getByRole('alert').filter({ hasText: 'No reward exists' }).waitFor();
   await page.getByRole('button', { name: 'Close reward studio' }).click();
-  await page.getByRole('button', { name: /0x.*Disconnect/ }).click();
-  await page.getByRole('button', { name: 'Disconnect from Voxaura' }).click();
+  await page.locator('header').getByRole('button', { name: /0x/ }).click();
+  await page.getByRole('button', { name: 'Disconnect from Meritiva' }).click();
   assert.equal(await page.locator('header').getByRole('button', { name: 'Connect wallet', exact: true }).isVisible(), true);
   assert.deepEqual(browserErrors, []);
   console.log('PASS: browser EIP-6963 discovery, rejected connection, retry, wrong-chain switch, invalid recipient, create, receipt identity, claim, refund, unknown ID and disconnect. Isolated local EVM; no supplied key used.');

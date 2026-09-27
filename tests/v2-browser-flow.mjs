@@ -20,7 +20,7 @@ const locals = Object.entries(rpc.getInitialAccounts()).map(([address, data]) =>
 const payer = await provider.getSigner(0), relayer = locals[2].wallet, feeRecipient = locals[3].address;
 const attestor = Wallet.createRandom();
 const tokenArtifact = JSON.parse(await fs.readFile(path.join(root, 'contracts/artifacts/MockUSD.json'), 'utf8'));
-const rewardArtifact = JSON.parse(await fs.readFile(path.join(root, 'contracts/artifacts/VoxauraRewards.json'), 'utf8'));
+const rewardArtifact = JSON.parse(await fs.readFile(path.join(root, 'contracts/artifacts/VoxdueRewards.json'), 'utf8'));
 const token = await new ContractFactory(tokenArtifact.abi, tokenArtifact.bytecode, payer).deploy();
 await token.waitForDeployment();
 const contract = await new ContractFactory(rewardArtifact.abi, rewardArtifact.bytecode, payer).deploy(attestor.address, feeRecipient, await token.getAddress());
@@ -29,10 +29,10 @@ const deployment = {
   address: await contract.getAddress(), network: { chainId: 46630 },
   abi: rewardArtifact.abi, feeBps: 300, expirySeconds: 7776000,
   token: { address: await token.getAddress(), symbol: 'tUSD', decimals: 6, abi: tokenArtifact.abi },
-  domain: { name: 'Voxaura Rewards', version: '2', chainId: 46630, verifyingContract: await contract.getAddress() },
+  domain: { name: 'Voxdue Rewards', version: '2', chainId: 46630, verifyingContract: await contract.getAddress() },
   claimTypes: { Claim: [{ name: 'rewardId', type: 'uint256' }, { name: 'recipient', type: 'address' }, { name: 'deadline', type: 'uint64' }] },
 };
-const testDir = await fs.mkdtemp(path.join(os.tmpdir(), 'Voxaura-v2-qa-'));
+const testDir = await fs.mkdtemp(path.join(os.tmpdir(), 'Meritiva-v2-qa-'));
 const chain = createV2Chain({ deployment, provider, attestor, relayer, budgetFile: path.join(testDir, 'budget.json'), maxDailyWei: 10n ** 18n, maxTransactionWei: 10n ** 18n });
 const origin = process.env.QA_URL ?? 'http://127.0.0.1:5177';
 let authorId = '42';
@@ -87,7 +87,7 @@ await page.route('**/api/**', async route => {
   const response = await route.fetch({ url: apiOrigin + original.pathname + original.search });
   await route.fulfill({ response });
 });
-await page.route('https://rpc.testnet.chain.Solana.com/**', async route => {
+await page.route('https://rpc.testnet.chain.robinhood.com/**', async route => {
   const body = route.request().postDataJSON();
   const handle = async req => {
     try { return { id: req.id, jsonrpc: '2.0', result: await rpc.request({ method: req.method, params: req.params ?? [] }) }; }
@@ -108,9 +108,9 @@ try {
   await dialog.getByLabel('Post URL', { exact: true }).fill('https://x.com/qa_author/status/123456789');
   await dialog.getByRole('button', { name: 'Find author', exact: true }).click();
   await dialog.locator('.ra-post-preview').waitFor();
-  await dialog.getByLabel('A little note', { exact: false }).fill('馃尡'.repeat(141));
+  await dialog.getByLabel('A little note', { exact: false }).fill('\u{1F331}'.repeat(141));
   assert.equal(await dialog.getByRole('button', { name: 'Approve & fund reward', exact: true }).isDisabled(), true);
-  await dialog.getByLabel('A little note', { exact: false }).fill('馃尡'.repeat(140));
+  await dialog.getByLabel('A little note', { exact: false }).fill('\u{1F331}'.repeat(140));
   assert.equal(await dialog.getByRole('button', { name: 'Approve & fund reward', exact: true }).isDisabled(), false);
   await dialog.getByLabel('A little note', { exact: false }).fill('A helpful explanation. Thank you!');
   await dialog.locator('form').getByRole('checkbox').check();
@@ -179,6 +179,6 @@ try {
   provider.destroy();
   await rpc.disconnect();
   const resolvedTemp = path.resolve(testDir);
-  if (path.dirname(resolvedTemp).toLowerCase() !== path.resolve(os.tmpdir()).toLowerCase() || !path.basename(resolvedTemp).startsWith('Voxaura-v2-qa-')) throw new Error('Refusing cleanup outside the verified QA temp directory.');
+  if (path.dirname(resolvedTemp).toLowerCase() !== path.resolve(os.tmpdir()).toLowerCase() || !path.basename(resolvedTemp).startsWith('Meritiva-v2-qa-')) throw new Error('Refusing cleanup outside the verified QA temp directory.');
   await fs.rm(resolvedTemp, { recursive: true, force: true });
 }

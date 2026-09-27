@@ -1,13 +1,13 @@
 {
-  "project": "Voxaura",
-  "contractName": "VoxauraRewards",
+  "project": "Meritiva",
+  "contractName": "VoxdueRewards",
   "version": "2",
   "environment": "testnet",
   "network": {
     "chainId": 46630,
     "chainName": "Robinhood Chain Testnet",
-    "rpcUrl": "https://rpc.testnet.chain.Solana.com",
-    "explorerUrl": "https://explorer.testnet.chain.Solana.com",
+    "rpcUrl": "https://rpc.testnet.chain.robinhood.com",
+    "explorerUrl": "https://explorer.testnet.chain.robinhood.com",
     "nativeCurrency": {
       "name": "Ether",
       "symbol": "ETH",
@@ -33,9 +33,9 @@
   },
   "bytecodeHash": "0xaac9940cd7a22c3fe7cb399274a16947996e98d911c2ee56dfd70aacdf506cd0",
   "constructorArguments": "0x0000000000000000000000008b3283a9291373069f79508da59001e807bb394f0000000000000000000000008b3283a9291373069f79508da59001e807bb394f00000000000000000000000096c7aece3349392a1e51e47d9ed421e606bb892f",
-  "explorerUrl": "https://explorer.testnet.chain.Solana.com/address/0x4FE62e5e94f3351c9325A1aBad150a1529DfEb6C",
+  "explorerUrl": "https://explorer.testnet.chain.robinhood.com/address/0x4FE62e5e94f3351c9325A1aBad150a1529DfEb6C",
   "domain": {
-    "name": "Voxaura Rewards",
+    "name": "Voxdue Rewards",
     "version": "2",
     "chainId": 46630,
     "verifyingContract": "0x4FE62e5e94f3351c9325A1aBad150a1529DfEb6C"
@@ -606,7 +606,7 @@
           "type": "uint64"
         },
         {
-          "internalType": "enum VoxauraRewards.Status",
+          "internalType": "enum VoxdueRewards.Status",
           "name": "status",
           "type": "uint8"
         },
@@ -690,7 +690,7 @@
   "token": {
     "contractName": "MockUSD",
     "address": "0x96c7aECe3349392a1E51E47D9Ed421e606Bb892f",
-    "name": "Voxaura Test USD - No Value",
+    "name": "Meritiva Test USD - No Value",
     "symbol": "tUSD",
     "decimals": 6,
     "abi": [
@@ -1068,7 +1068,7 @@
     "transactionHash": "0x8d3b317a33df06eb6a1c822d883ae1235e34d9a5350e7190a7118985cfcc3955",
     "blockNumber": 121200536,
     "bytecodeHash": "0x637a750b627fe78f3a3166ef4926162de9c9d9fded69cf2da663753392f45dab",
-    "explorerUrl": "https://explorer.testnet.chain.Solana.com/address/0x96c7aECe3349392a1E51E47D9Ed421e606Bb892f",
+    "explorerUrl": "https://explorer.testnet.chain.robinhood.com/address/0x96c7aECe3349392a1E51E47D9Ed421e606Bb892f",
     "faucetAmount": "1000000000",
     "faucetCooldownSeconds": 86400,
     "disclaimer": "Demo token only. Not USDG or Paxos. No backing, redemption, or monetary value.",
@@ -1085,4 +1085,3 @@
     "checkedAt": "2026-09-18T11:26:01.331Z"
   }
 }
-

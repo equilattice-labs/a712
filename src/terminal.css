@@ -323,3 +323,102 @@ dialog::backdrop { background: #050906c9; backdrop-filter: blur(4px); }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
 }
+
+/* Wallet workspace reskin: neutral slate surfaces with explicit asset states. */
+:root {
+  color: #e8eef6;
+  background: #080b10;
+  color-scheme: dark;
+  --forest: #111822;
+  --green: #84e6bd;
+  --lime: #9be78d;
+  --cream: #141d29;
+  --muted: #8f9db0;
+  --line: #273344;
+  --coral: #ff9578;
+  --up: #5bd9a8;
+  --blue: #7db4ff;
+}
+
+html, body { background: #080b10; color: #e8eef6; }
+.section-wrap { max-width: 1400px; }
+.site-header { border-bottom-color: #1e2938; background: rgba(8, 11, 16, .94); backdrop-filter: blur(16px); }
+.brand { color: #f2f6fb; }
+.brand-badge { border-color: #354458; color: #9be78d; background: #101a18; }
+.desktop-nav a { color: #8f9db0; }
+.desktop-nav a.active { border-color: #7db4ff; color: #e8eef6; }
+.desktop-nav a:hover, .wallet-nav:hover { color: #9be78d; }
+.wallet-nav { color: #c1ccda; }
+.button.primary, .button.dark { background: #9be78d; color: #0d1713; }
+.button.primary:hover, .button.dark:hover { background: #b1f2a4; }
+.button.secondary { background: #141d29; border-color: #334257; color: #e3ebf5; }
+.button.secondary:hover { background: #1b2737; }
+.icon-button:hover { background: #182331; }
+.mobile-nav { background: #111822; border-color: #2b394c; box-shadow: 0 18px 45px #0008; }
+.mobile-nav a, .mobile-nav button { color: #e8eef6; }
+.workspace { padding-top: 24px; padding-bottom: 28px; }
+.terminal-overview { border-bottom-color: #1e2938; }
+.terminal-overview .eyebrow, .section-heading .eyebrow { color: #8fa2b8; }
+.terminal-overview h1 { color: #f2f6fb; font-size: 32px; letter-spacing: -.5px; }
+.terminal-overview-head p { color: #91a0b2; }
+.chain-badge { border-color: #2b394b; background: #111822; color: #e8eef6; }
+.chain-badge small { color: #8999ad; }
+.terminal-grid { gap: 12px; margin-top: 18px; }
+.terminal-grid article { border-color: #273344; border-radius: 8px; background: #111822; }
+.terminal-panel-label { color: #91a2b7; }
+.connection-badge { color: #92a1b3; }
+.connection-badge.connected { color: #84e6bd; }
+.connection-badge.connected .live-dot { background: #5bd9a8; }
+.terminal-balance-value { color: #f2f6fb; }
+.terminal-balance-value small { color: #8f9db0; }
+.terminal-balance-meta { color: #8291a3; }
+.terminal-balance-meta button, .text-link { color: #9be78d; }
+.terminal-balance-meta button:hover, .text-link:hover { color: #c1f6b5; }
+.terminal-balance-help { color: #8291a3; }
+.terminal-activity-panel h2 { color: #f2f6fb; }
+.terminal-activity-panel p { color: #8291a3; }
+.terminal-rules-panel dl > div { border-bottom-color: #263243; }
+.terminal-rules-panel dt { color: #91a0b2; }
+.terminal-rules-panel dd { color: #e8eef6; }
+.terminal-rules-panel dd span, .terminal-rule-note { color: #8493a6; }
+.subtle-label { color: #7f8ea3; }
+.route-card, .receipt-guide, .workflow-panel, .build-panel, .faq-section { border-color: #273344; border-radius: 8px; background: #111822; }
+.route-icon, .receipt-guide-icon { border-color: #34465d; color: #9be78d; background: #141f2c; }
+.pill { border-color: #35465c; color: #9aabc0; background: #131d2a; }
+.route-card h3, .receipt-guide h3 { color: #e8eef6; }
+.route-card p, .receipt-guide p { color: #91a0b2; }
+.route-assets span, .route-features span { border-color: #2b394b; background: #141e2b; color: #b4c1d1; }
+.route-assets b { color: #9be78d; }
+.route-features svg { color: #6fd8ad; }
+.route-card > small { color: #78879b; }
+.receipt-guide ol { color: #b4c1d1; }
+.receipt-guide li span { color: #7db4ff; }
+.receipt-guide > a { color: #9be78d; }
+.workflow-panel { background: #0f161f; }
+.workflow-steps article + article { border-color: #273344; }
+.workflow-steps article > span { border-color: #3a4d65; color: #9be78d; background: #14202d; }
+.workflow-steps h3 { color: #e1eaf4; }
+.workflow-steps p { color: #8493a6; }
+.build-row > svg { color: #69d6aa; }
+.build-row strong { color: #dce6f1; }
+.build-row p { color: #8493a6; }
+.faq-section { display: block; padding: 17px 18px; }
+.faq-section > .section-heading { margin-bottom: 8px; }
+.faq-list article, .faq-list article:first-child { border-color: #273344; }
+.faq-list button { color: #dce6f1; }
+.faq-list button svg { color: #9be78d; }
+.faq-list p { color: #91a0b2; }
+.site-footer { color: #8493a6; }
+.footer-top > p { color: #8f9db0; }
+.footer-top > a:not(.brand), .footer-top > button, .footer-bottom button { color: #aebcce; }
+.footer-bottom { border-color: #233043; color: #718197; }
+.footer-disclaimer { color: #68778b; }
+.workspace-bottom { align-items: start; }
+.workspace-bottom > .build-panel, .workspace-bottom > .faq-section { min-height: 0; }
+
+@media (max-width: 680px) {
+  body { background-size: 42px 42px; }
+  .terminal-overview h1 { font-size: 30px; }
+  .terminal-grid article { border-radius: 8px; }
+  .route-card, .receipt-guide, .workflow-panel, .build-panel, .faq-section { border-radius: 8px; }
+}

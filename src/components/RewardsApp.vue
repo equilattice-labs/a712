@@ -329,7 +329,7 @@ async function refund() {
 }
 function receiptUrl() { const url = new URL('/', location.origin); url.searchParams.set('v2Reward', selected.value!.id); return url.toString() }
 async function copyReceipt() { if (!selected.value) return; try { await navigator.clipboard.writeText(receiptUrl()); notice.value = 'Reward receipt copied.' } catch { notice.value = `Receipt: ${receiptUrl()}` } }
-function shareReceipt() { if (!selected.value) return; const url = new URL('https://x.com/intent/tweet'); url.searchParams.set('text', 'A little appreciation for a worthwhile post. My Meritiva testnet reward receipt:'); url.searchParams.set('url', receiptUrl()); window.open(url.toString(), '_blank', 'noopener,noreferrer') }
+function shareReceipt() { if (!selected.value) return; const url = new URL('https://x.com/intent/tweet'); url.searchParams.set('text', 'A little appreciation for a worthwhile post. My Voxcora testnet reward receipt:'); url.searchParams.set('url', receiptUrl()); window.open(url.toString(), '_blank', 'noopener,noreferrer') }
 function amountText(reward: RewardRecord, amountValue = reward.amount) { return `${displayAmount(amountValue, rewardAsset(reward.token))} ${rewardAsset(reward.token) === 'ETH' ? 'test ETH' : 'tUSD'}` }
 function formatDate(seconds: number) { return new Date(seconds * 1000).toLocaleString('en-US', { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit', timeZoneName: 'short' }) }
 onMounted(async () => {
@@ -345,7 +345,7 @@ onUnmounted(() => { if (timer) clearInterval(timer); provider.destroy(); documen
   <dialog ref="dialog" class="rewards-app" aria-labelledby="rewards-app-title" @close="close" @click="e => { if (e.target === dialog) close() }">
     <div class="ra-shell">
       <aside class="ra-sidebar">
-        <a class="brand" href="#" @click.prevent="close"><img src="/logo.svg" alt="" />meritiva</a>
+        <a class="brand" href="#" @click.prevent="close"><img src="/logo.svg" alt="" />voxcora</a>
         <div class="ra-workspace-label"><span class="live-dot"></span> THE APPRECIATION DESK</div>
         <nav class="ra-tabs" role="tablist" aria-label="Rewards dashboard">
           <button v-for="item in nav" :id="`ra-tab-${item.id}`" :key="item.id" role="tab" :aria-selected="tab === item.id" aria-controls="ra-panel" :class="{ active: tab === item.id }" :disabled="busy" @click="changeTab(item.id)"><component :is="item.icon" :size="17" /><span>{{ item.label }}</span><ArrowRight v-if="tab === item.id" :size="14" /></button>

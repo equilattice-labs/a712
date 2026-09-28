@@ -32,7 +32,7 @@ const deployment = {
   domain: { name: 'Voxdue Rewards', version: '2', chainId: 46630, verifyingContract: await contract.getAddress() },
   claimTypes: { Claim: [{ name: 'rewardId', type: 'uint256' }, { name: 'recipient', type: 'address' }, { name: 'deadline', type: 'uint64' }] },
 };
-const testDir = await fs.mkdtemp(path.join(os.tmpdir(), 'Meritiva-v2-qa-'));
+const testDir = await fs.mkdtemp(path.join(os.tmpdir(), 'Voxcora-v2-qa-'));
 const chain = createV2Chain({ deployment, provider, attestor, relayer, budgetFile: path.join(testDir, 'budget.json'), maxDailyWei: 10n ** 18n, maxTransactionWei: 10n ** 18n });
 const origin = process.env.QA_URL ?? 'http://127.0.0.1:5177';
 let authorId = '42';
@@ -179,6 +179,6 @@ try {
   provider.destroy();
   await rpc.disconnect();
   const resolvedTemp = path.resolve(testDir);
-  if (path.dirname(resolvedTemp).toLowerCase() !== path.resolve(os.tmpdir()).toLowerCase() || !path.basename(resolvedTemp).startsWith('Meritiva-v2-qa-')) throw new Error('Refusing cleanup outside the verified QA temp directory.');
+  if (path.dirname(resolvedTemp).toLowerCase() !== path.resolve(os.tmpdir()).toLowerCase() || !path.basename(resolvedTemp).startsWith('Voxcora-v2-qa-')) throw new Error('Refusing cleanup outside the verified QA temp directory.');
   await fs.rm(resolvedTemp, { recursive: true, force: true });
 }

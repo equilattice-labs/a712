@@ -286,7 +286,7 @@ onUnmounted(() => { if (ticker) clearInterval(ticker); provider.destroy(); docum
   <dialog ref="dialog" class="studio-dialog x-studio-dialog" @close="close" @click="e => { if (e.target === dialog) close() }">
     <div class="studio-shell">
       <aside class="studio-sidebar">
-        <a class="brand" href="#" @click.prevent="close"><img src="/logo.svg" alt="" />meritiva</a>
+        <a class="brand" href="#" @click.prevent="close"><img src="/logo.svg" alt="" />voxcora</a>
         <span class="eyebrow"><span class="live-dot" :class="{ offline: !xEnabled }"></span> THE AUTHOR REWARD STUDIO</span>
         <h2>The post is theirs.<br>The thank-you, too.</h2>
         <p>Reward a public post. Its author signs in with X and chooses a wallet to claim.</p>

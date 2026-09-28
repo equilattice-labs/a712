@@ -1,5 +1,5 @@
 {
-  "project": "Meritiva",
+  "project": "Voxdue",
   "contractName": "VoxdueRewards",
   "version": "2",
   "environment": "testnet",
@@ -690,7 +690,7 @@
   "token": {
     "contractName": "MockUSD",
     "address": "0x96c7aECe3349392a1E51E47D9Ed421e606Bb892f",
-    "name": "Meritiva Test USD - No Value",
+    "name": "Voxdue Test USD - No Value",
     "symbol": "tUSD",
     "decimals": 6,
     "abi": [

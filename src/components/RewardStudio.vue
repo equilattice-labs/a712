@@ -143,7 +143,7 @@ onUnmounted(() => { clearInterval(ticker); document.body.style.overflow = '' })
   <dialog ref="dialog" class="studio-dialog" @close="close" @click="e => { if (e.target === dialog) close() }">
     <div class="studio-shell">
       <aside class="studio-sidebar">
-        <a class="brand" href="#" @click.prevent="close"><img src="/logo.svg" alt="" />meritiva</a>
+        <a class="brand" href="#" @click.prevent="close"><img src="/logo.svg" alt="" />voxcora</a>
         <span class="eyebrow"><span class="live-dot"></span> THE TESTNET STUDIO</span>
         <h2>A good post.<br>A real thank you.</h2>
         <p>Send a little appreciation. Follow every step onchain.</p>

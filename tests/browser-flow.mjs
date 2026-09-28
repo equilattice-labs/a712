@@ -96,7 +96,7 @@ try {
   await page.getByRole('alert').filter({ hasText: 'No reward exists' }).waitFor();
   await page.getByRole('button', { name: 'Close reward studio' }).click();
   await page.locator('header').getByRole('button', { name: /0x/ }).click();
-  await page.getByRole('button', { name: 'Disconnect from Meritiva' }).click();
+  await page.getByRole('button', { name: 'Disconnect from Voxcora' }).click();
   assert.equal(await page.locator('header').getByRole('button', { name: 'Connect wallet', exact: true }).isVisible(), true);
   assert.deepEqual(browserErrors, []);
   console.log('PASS: browser EIP-6963 discovery, rejected connection, retry, wrong-chain switch, invalid recipient, create, receipt identity, claim, refund, unknown ID and disconnect. Isolated local EVM; no supplied key used.');
